@@ -89,6 +89,12 @@ skakf10b.tfm skakf10b.600gf: mf/skakf10b.mf $(MFSKAKBASE) skakbase
 	(mf "\mode:=localfont; input mf/skakf10b")
 
 install: fonts doc
+	install -d ${DESTPK}
+	install -d ${DESTGF}
+	install -d ${DESTTFM}
+	install -d ${DESTSOURCE}
+	install -d ${INPUTS}
+	install -d ${DESTDOC}
 	install   skak*.600pk $(DESTPK)
 	install   skak*.600gf $(DESTGF)
 	install   skak*.tfm   $(DESTTFM)

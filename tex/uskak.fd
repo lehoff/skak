@@ -1,0 +1,11 @@
+\DeclareFontFamily{U}{skak}{}
+  \DeclareFontShape{U}{skak}{m}{n}{<-> skakf10 }{}
+  \DeclareFontShape{U}{skak}{m}{sl}{<-> sub skakf10/m/n }{}
+  \DeclareFontShape{U}{skak}{m}{it}{<-> sub skakf10/m/n }{}
+  \DeclareFontShape{U}{skak}{m}{sc}{<-> sub skakf10/m/n }{}
+  \DeclareFontShape{U}{skak}{m}{u}{<-> sub skakf10/m/n }{}
+  \DeclareFontShape{U}{skak}{bx}{n}{<-> skakf10b }{}
+  \DeclareFontShape{U}{skak}{bx}{sl}{<-> sub skakf10b/bx/n }{}
+  \DeclareFontShape{U}{skak}{bx}{it}{<-> sub skakf10b/bx/n }{}
+  \DeclareFontShape{U}{skak}{b}{u}{<-> skakf10b }{}
+\endinput

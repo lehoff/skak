@@ -1,0 +1,641 @@
+\documentclass[10pt]{article}
+
+\usepackage{lambda,ifthen,calc}
+\usepackage{tabularx}
+\usepackage[ps,mover,small,skaknew]{skak}
+\usepackage{fancyvrb}
+\usepackage{multicol}
+\usepackage[final]{showexpl}
+
+
+
+\makeatletter
+%% to get showexpl to respekt empty lines
+%% this corrects a bug in showexpl as long
+%% as the new version isn't there
+\renewcommand*\SX@resultInput{%
+  %%\MakePercentComment\catcode`\^^M=10\relax
+  \SX@@preset\SX@preset
+  \if@SX@rangeaccept
+    \let\@tempa=\SX@input% Nur sinnvoll bei \LTXinputExample
+  \else
+    \let\@tempa=\input
+  \fi
+  \@tempa{\SX@codefile}%
+  \MakePercentIgnore}
+\makeatother
+
+
+\lstset{width=0.5} % wider examples
+\lstset{preset=\raggedright}
+
+\usepackage[inactive]{pst-pdf}
+%\usepackage{pst-pdf}
+
+\makeatletter
+% to be able to redefine showboard, should go in skak.sty
+\def\notationOn{\let\print@board=\show@board@notation%
+  \let\print@inverseboard=\show@board@notation@inverse}
+\def\notationOff{\let\print@board=\show@board%
+  \let\print@inverseboard=\show@board@inverse}
+
+\renewcommand\showboard{\print@board}
+\renewcommand\showinverseboard{\print@inverseboard}
+\makeatother
+
+\notationOn
+
+\let\ORIshowboard\showboard
+\let\ORIshowinverseboard\showinverseboard
+\renewcommand\showboard{%
+    \makebox[8\squarelength]{%
+    \rule{0pt}{9\squarelength}% for better spacing above board
+    \begin{postscript}% siehe pst-pdf.sty
+    [trim = \squarelength{} 0pt \squarelength{} 0pt]
+    \ORIshowboard
+    \end{postscript}}}
+
+\renewcommand\showinverseboard{%
+    \makebox[8\squarelength]{%
+    \rule{0pt}{9\squarelength}% for better spacing above board
+    \begin{postscript}% siehe pst-pdf.sty
+    [trim = \squarelength{} 0pt \squarelength{} 0pt]
+    \ORIshowinverseboard
+    \end{postscript}}}
+
+
+\newcommand{\package}[1]{\textsf{#1}}
+\newcommand{\command}[1]{\textbackslash\texttt{#1}}
+\newcommand{\pgn}{PGN\ }
+\newcommand{\san}{SAN\ }
+\newcommand{\fen}{FEN\ }
+\newcommand{\xboard}{xboard}
+\newcommand{\metafont}{\textsc{Metafont}\ }
+\newcommand{\filename}[1]{\texttt{#1}}
+%\newenvironment{example}
+%   {\VerbatimEnvironment\begin{VerbatimOut}{test.out}}
+%   {\end{VerbatimOut}\small\noindent
+%\begin{multicols}{2}
+%\BVerbatimInput{test.out}
+%\columnbreak%
+%
+%\input{test.out}%
+%\end{multicols}
+%   \normalsize}
+
+
+
+\newcommand{\Guido}{Guido Governatori\ }
+\newcommand{\Harri}{Harri Haanpaa\ }
+\newcommand{\Ingo}{Ingo Sander\ }
+\newcommand{\Dirk}{Dirk B\"achle\ }
+\newcommand{\Ulrike}{Ulrike Fischer\ }
+\newcommand{\Andreas}{Andreas Wilm\ }
+
+
+
+\title{Typesetting Chess in \LaTeX with the \package{skak} Package\\
+Version 1.5}
+\author{Torben Hoffmann\\ e-mail: \texttt{torben.lehoff@gmail.com}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  This user guide shows how to use an enhancement to the existing
+  package for typesetting chess in \LaTeX (\package{skak}). The
+  primary improvement over the old package is that it has become
+  easier to typeset chess games with this new package.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Terms of Usage}
+\label{sec:terms-usage}
+
+This package is distributed under the terms described in the Latex
+Project Public Licence, i.e.,
+
+\begin{quote}
+  This software is copyright but you are granted a license which gives
+  you, the ``user'' of the software, legal permission to copy,
+  distribute, and/or modify the software. However, if you modify the
+  software and then distribute it (even just locally) you must change
+  the name of the software to avoid confusion.
+\end{quote}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Acknowledgements}
+\label{sec:acknowledgements}
+
+I would like to thank the creator of the \package{lambda} package,
+Alan Jeffrey, for making a splendid package that made this package
+possible.
+
+For discussions and alpha-testing I send my thanks to \Guido --- some
+of his ideas have already been implemented; the rest? Time will show.
+
+Thanks to \Harri for finding a nasty bug in the castling routine.
+
+A big thank goes to \Dirk for adding the Informator symbols to the
+fonts and for removing a couple of nasty bugs as well as improving
+some of the commands.
+
+I thank \Ulrike for the tremendous work she has done with regards to
+improving the way fonts are handled by the skak package, not to
+mention the significant amount of bugs she has found and in many cases
+fixed.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Installing the \package{skak} Package}
+\label{sec:install}
+
+I could not get the makefile to do the job, so if someone could help
+me out on this I would be very glad indeed.
+
+Basically all you have to do is to follow the guidelines in the
+makefile. First you create all the required directories (stated in the
+\texttt{install} section of the makefile) and then you run the
+\texttt{make install} command. Remember to run \texttt{texhash} after
+you have updated your texmf tree.
+
+Sorry that it is not working $100\%$--- I just do not have the time for
+it right now.
+
+If you cannot get the things working just put the files where \TeX and
+the other tools can find them and you will be just fine.
+
+For Windows user I can recommend the MikTeX installation since it has
+skak as a package and all you have to do is to use the MikTeX
+installation tools and select installation of skak and you're up and
+running.
+
+Ultimately the skak package should be documented using the \LaTeX
+standard documentation, but that is a major undertaking that will not
+happen right now.
+
+\subsection{Using the \package{lambda} Package}
+\label{sec:using-lambda}
+
+The \package{skak} package uses the \package{lambda} package to do
+some of the hard processing necessary to allow the \pgn notation as
+input --- since it is not standard in \LaTeX distributions it is
+included in the distribution of the \package{skak} package.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Basic usage of the \package{skak} package}
+\label{sec:basic-usage}
+
+Once the \package{skak} package has been installed you only need to
+know very few things in order to produce nicely typeset chess games:
+
+\begin{itemize}
+\item write \verb|\usepackage{skak}| in the preamble.
+\item the \command{newgame} command.
+\item the \command{mainline} command.
+\item the \command{variation} command.
+\item the \command{showboard} command.
+\end{itemize}
+
+As an example I will describe some moves from the Ruy Lopez opening
+--- please note that the comments are just idle talk. In the left
+column the input is shown and the corresponding output is shown in the
+right column.
+
+\begin{LTXexample}
+\newgame
+\mainline{1.e4 e5 2. Nf3 Nc6 3.Bb5}
+
+\showboard
+\end{LTXexample}
+
+The \command{newgame} command sets up the internal board or a new
+game. The \command{mainline} command does two things: it typesets the
+moves and updates the board so that \command{showboard} will show the
+current board position.
+
+\begin{LTXexample}
+\mainline{3...a6} \savegame{pap1}
+Rarely used these days,
+\variation{3...Nf6} is more in
+fashion since blah blah...
+\mainline{4.Ba4}
+
+\showboard
+\end{LTXexample}
+
+
+
+This example shows that if it is black to move the move number shoud
+be followed by three periods. Furthermore, it also shows that the
+\command{variation} command merely typesets the moves --- it does
+\emph{not} update the board, but apart from that it expects the same
+input as \command{mainline}.
+
+The four commands introduced in this section will enable you to
+comment your games with minimal effort and still get great results ---
+in fact most chess books can be writen using only these commands!
+
+But the \package{skak} package offers a lot more that can make chess
+typesetting easier for your --- these features are the topics of the
+next two sections.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Intermediate Usage of the \package{skak} Package}
+\label{sec:intermediate}
+
+This section describes how to
+\begin{itemize}
+\item do game management,
+\item add ornaments to the board and
+\item controlling some aspects of showing the board.
+\end{itemize}
+
+
+\subsection{Game Management}
+\label{sec:game-management}
+
+Returning to the Ruy Lopez example suppose you want to go into details
+about a number of variations after white's third move, preferably
+showing the board in all the lines you describe.
+
+One way to do this is to use the \command{hidemoves} command like
+this:
+
+\begin{LTXexample}
+\newgame
+\mainline{1.e4 e5 2. Nf3 Nc6 3.Bb5}
+
+\showboard
+\end{LTXexample}
+
+\begin{LTXexample}
+\mainline{3...a6} blah blah
+
+\showboard
+
+\end{LTXexample}
+
+\begin{LTXexample}
+\newgame
+\hidemoves{1.e4 e5 2. Nf3 Nc6 3.Bb5}
+\mainline{3...Nge7} blah blah
+
+\showboard
+\end{LTXexample}
+
+This is, admittedly, a labourious way of doing it, but the example
+shows how \command{hidemoves} can fast-forward you to any point in a game.
+
+
+\package{skak} offers you ways of storing game positions
+\begin{itemize}
+\item in memory or
+\item in a file.
+\end{itemize}
+
+The former is done using the \command{storegame} and
+\command{restoregame} commands like this:
+
+\begin{LTXexample}
+\newgame
+\mainline{1.e4 e5 2. Nf3 Nc6 3.Bb5}
+\storegame{game1}
+\mainline{3...a6 4.Ba4 b5}
+
+\showboard
+\restoregame{game1}
+
+\mainline{3...Bd7}
+\showboard
+\end{LTXexample}
+
+
+Saving and loading to/from a file is the same just with the commands
+\command{savegame} and \command{loadgame}.
+
+
+\section{Ornaments}
+\label{sec:ornaments}
+
+
+
+\subsection{Showing the Board}
+\label{sec:showing-board}
+
+We have already seen \command{showboard} in action, but is is possible
+to alter the way the board looks like.
+
+With the \command{mover}\footnote{\command{mover} only works if the \package{skak} is loaded with the ps option.} command one can request that a little marker
+is shown next to the board indicating who is to move next.
+
+\begin{LTXexample}
+\newgame
+
+\showboard
+
+\end{LTXexample}
+
+\begin{LTXexample}%9 okay
+
+\mainline{1.d4}
+
+\showboard
+\end{LTXexample}
+
+This can be turned off with \command{moveroff}. You can also remove
+the notation around the board using \command{notationoff} which gives
+this appearance:
+
+\begin{LTXexample}
+\newgame
+\notationoff
+\showboard
+
+\end{LTXexample}
+
+The notation is added again after one has issued
+\command{notationon}. \notationon
+
+A more elaborate explanation of how the appearance of the notation
+around the board is configured can be found in \cite{chessnfss}.
+
+Although it is rarely seen is chess books \package{skak} offers
+the possibility of showing the board from black's perspective
+using the
+\command{showinverseboard} command.
+
+\begin{LTXexample}
+\newgame
+\showboard
+
+\end{LTXexample}
+
+If you are writing about an opening from black's point of view this
+command/feature could be a welcome refreshment in presentation style.
+
+
+\subsection{Handy Commands}
+\label{sec:handycommands}
+
+By requst of users and own usage a couple of handy commands have been
+added to \package{skak} that you might find useful too.
+
+\command{wmove\{\emph{move}\}} typesets a single move, whereas
+\command{bmove\{\emph{move}\}} does the same only with leading
+ellipses (see \ref{sec:advanced-usage}for in-depth explanation). This
+is useful for short remarks like:
+
+\begin{LTXexample}
+\bmove{Nd4} would have been better.
+\end{LTXexample}
+
+
+\command{lastmove} is a shorthand for commenting on the last move made:
+
+\begin{LTXexample}
+\newgame
+\mainline{1.a3}
+
+\lastmove{} is bad.
+\end{LTXexample}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Advanced Usage}
+\label{sec:advanced-usage}
+
+This section will describe some features of the \package{skak} package
+that allows you to control a lot with regards to the typesetting of
+moves as well as how the board is shown.
+
+Furthermore, we will take a look at how the board is set up in
+arbitrary positions and how the input language can be changed.
+
+
+\subsection{Tailoring of the Board Appearance}
+\label{sec:tail-board-appe}
+
+In additon to the ornaments and showing the board upside down
+described in \ref{sec:intermediate} one can choose to show only a
+subset of the pieces actually on the board.
+
+The simple commands \command{showonlywhite} and \command{showonlyblack} shows
+only one colour on the board:
+
+\begin{LTXexample}
+\newgame
+\mainline{1.e4 e5 2. Nf3 Nc6 3.Bb5}
+
+\showonlywhite
+\showboard
+
+\end{LTXexample}
+
+\begin{LTXexample}
+\showonlyblack
+\showboard
+\end{LTXexample}
+
+
+This is often used when describing openingswhere one wants to focus on
+the merrits of the piece set-up on one side without considering how
+the other side is positioned.
+
+In addition to the commands for showing only one colour it is also
+possible to show any subset of the pieces on the board using the
+\command{showonly} command that takes a comma sperated list of piece
+names as argument:
+
+\begin{LTXexample}
+The pawn structure is
+now like this:
+
+\showonly{P,p}
+\showboard
+\end{LTXexample}
+
+The piece names are the standard English name with the addition that
+white pieces are denoted by upper case and black's by lowercase. Pawns
+are P and p.
+
+It is also possible to do the opposite of \command{showonly} using
+\command{showallbut}:
+
+\begin{LTXexample}
+\showallbut{P,p}
+\showboard
+\end{LTXexample}
+
+
+\subsection{Setting up the Board}
+\label{sec:setting-up-board}
+
+So far we have only looked how to start a new game, but you can also
+set up the board in \emph{any} position using the command
+\command{fenboard}:
+
+Forsyth-Edwards Notation (FEN) is a standard used to describe chess
+positions. It starts with a description of the contents of the ranks
+on the board. The ranks are separted by a slash starting with the
+eighth row, so if you want to write down the FEN of a
+position you should be seated as white and work your way dow the
+board. The pieces are designated using the stardard English piece
+names.
+
+After the position of the pieces the following information is given
+separated by spaces:
+\begin{itemize}
+\item who it is to move (w or b).
+\item castling options left for white. - for none, and K and Q for
+  options to castle kingside or queenside for white and k and q for black
+\item en passant square, if applicable otherwise a -.
+\item number of halfmoves since the last capture.
+\item the move number.
+\end{itemize}
+
+
+\begin{LTXexample}
+\fenboard{r5k1/1b1p1ppp/p7/1p1Q4/
+2p1r3/PP4Pq/BBP2b1P/R4R1K w - - 0 20}
+
+\mbox{}
+\bigskip
+
+\showboard
+
+
+\mainline{20.Qxb7 Rae8 21.Qd5}
+
+\end{LTXexample}
+
+
+\subsection{Typesetting Style}
+\label{sec:typesetting-style}
+
+There are a couple of ways to configure how the move are typeset as
+described in the following.
+
+
+\subsubsection{\command{styleA}}
+\label{sec:stylea}
+
+The \command{styleA} will switch the typesetting to the way it has
+been the standard in Denmark and --- I believe --- Germany.
+
+\begin{LTXexample}
+\newgame
+\styleA
+
+\mainline{1.e4 c5 2.Nf3 Nc6} 
+\end{LTXexample}
+
+
+\subsubsection{\command{styleB}}
+\label{sec:styleb}
+
+The style selected by \command{styleB} is the default one.
+
+\begin{LTXexample}
+\newgame
+\styleB
+
+\mainline{1.e4 c5 2.Nf3 Nc6} 
+\end{LTXexample}
+
+
+\subsubsection{\command{styleC}}
+\label{sec:styleb}
+
+The style selected by \command{styleC} is an elaboration on
+\command{styleB}: it typesets the moves line by line for each move for
+the mainline but on the same line for variations --- this style is
+used in many books these days, but look the best in a two-column
+setting where the linewidth is small.
+
+\begin{LTXexample}
+\newgame
+\styleC
+
+\mainline{1.e4 c5 2.Nf3 Nc6} 
+
+Interesting how \variation{2...d6} is blah blah.
+\end{LTXexample}
+
+\styleB
+
+
+\subsubsection{\command{variationstyle} and  \command{mainlinestyle}}
+\label{sec:variationstyle}
+
+Configuration of these commands allows for total control of the
+typesetting of the mainline and variations, they default to:
+
+\begin{verbatim}
+\def\mainlinestyle{\bfseries}% could also contain
+                             % definitions of the
+                             % various style options
+\def\variationstyle{}% as with mainlinestyle
+\end{verbatim}
+
+They are used by \command{styleC} to control the switching back and
+forth between a tabbed environment and normal typesetting:
+
+\begin{verbatim}
+\def\mainlinestyle{\styleC\bfseries}
+\def\variationstyle{\styleB}
+\end{verbatim}
+
+
+
+\subsubsection{\command{longmoves} and \command{sanmoves}}
+\label{sec:commandlongmove}
+
+The \command{longmoves} command will ensure that the full move, i.e., including the from
+square is typeset. This is also know as \emph{algebraic} notation ---
+can be quite handy when writing about chess for children or other
+newcommers to chess notation.
+
+\begin{LTXexample}
+\newgame
+\longmoves
+
+\mainline{1.e4 c5 2.Nf3 Nc6} 
+\end{LTXexample}
+
+\shortmoves
+
+The \command{shortmoves} command returns things to normal.
+
+
+\subsection{Input Language}
+\label{sec:input-language}
+
+The \package{skak} package by default uses the English letters for the
+pieces, i.e., K for King, Q for Queen, R for Rook, B for Bishop, N for
+Knight and P for Pawn.
+
+The \command{newskaklanguage} command makes it possible to define
+other languages than English, e.g., suppose I want to use the Danish
+piece letters:
+
+\begin{LTXexample}
+\newskaklanguage{danish}{KDTLSB}
+
+\skaklanguage[danish]
+
+\newgame
+\mainline{1.e4 c5 2.Sf3 Sc6} 
+\end{LTXexample}
+
+
+
+\end{document}

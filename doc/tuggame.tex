@@ -1,0 +1,122 @@
+% This is a skak version of the tugame.ltx which Piet Tutelaers made
+% to show how the original chess package could be used.
+% I have changed it to use the skak package commands as a
+% demonstration of how to use the skak package.
+% Author: Torben Hoffmann
+%
+% Change history
+% --------------
+% Version          Comments 
+%  1.0             Initial version adapted to the skak package.
+
+% The original comments follows below
+%===================================================================
+%
+% TUGgame.ltx
+% -----------
+% LaTeX source of example in TUGboat article (part of the game Fisher
+% lost against Tal), input'ted by TUGboat.ltx.
+% Author : Piet Tutelaers (internet: rcpt@urc.tue.nl)
+% Version: 1.2 ( 8 Jun 1991)
+%    Reflects changes in chess.sty version 1.2
+% Version: 1.1 (30 Nov 1990)
+%    Improvements over version 1.0:
+%     - two typos corrected, thanks Hugo
+%===================================================================
+
+
+\documentclass[10pt]{article}
+
+\usepackage[ps,mover,styleC]{skak}
+\usepackage[final]{showexpl}
+\usepackage{a4wide}
+
+
+\makeatletter
+%% to get showexpl to respekt empty lines
+%% this corrects a bug in showexpl as long
+%% as the new version isn't there
+\renewcommand*\SX@resultInput{%
+  %%\MakePercentComment\catcode`\^^M=10\relax
+  \SX@@preset\SX@preset
+  \if@SX@rangeaccept
+    \let\@tempa=\SX@input% Nur sinnvoll bei \LTXinputExample
+  \else
+    \let\@tempa=\input
+  \fi
+  \@tempa{\SX@codefile}%
+  \MakePercentIgnore}
+\makeatother
+
+
+\lstset{width=0.5} % wider examples
+\lstset{preset=\raggedright}
+
+
+
+
+\title{Example of the LaTeX-input and output of an annotated 
+chess game using \texttt{skak.sty}}
+\author{Torben Hoffmann}
+
+\begin{document}
+
+\parindent=0pt
+
+\maketitle
+
+
+\begin{LTXexample}
+\fenboard{1q3kr1/3rb2p/p3Q3/8/1p6/8/%
+PPP3PP/4R2K w - - 0 26}
+
+
+$$\showboard$$
+
+Fischer--Tal after \movecomment{25... Kf8!}
+
+\mainline{26. Qxd7}
+
+Not \variation{26. Rf1+ Kg7 27. Rf7+ Kh8} and if
+\continuevariationcurrent{28. Qxd7 Rd8 29. Qg4 Qe5} wins. 
+
+\mainline{26...Qd6 27. Qb7 Rg6}
+Within a handful of moves the game has changed its complexion. 
+Now it is White who must fight for a draw! 
+
+\mainline{28. c3}
+Black's extra piece means less with each pawn that's exchanged.
+
+\mainline{28...a5}
+On \variation{28...bxc3 29. Qc8+ Bd8 30. Qxc3}=.
+
+\end{LTXexample}
+
+\begin{LTXexample}
+
+\storegame{mainline}
+\mainline{29. Qc8+} 
+On the wrong track. Right is \variation{29. cxb4 Qxb4}  (if 
+\continuevariation{29... axb4 30. a3! bxa3 31. bxa3 Qxa3} 
+draws) 
+\restoregame{mainline} \hidemoves{29. cxb4 Qxb4}
+\variationcurrent{30. Qf3+ Kg7 31. Qe2} draws, 
+since Black can't possibly build up a winning K-side 
+attack and his own king is to exposed.
+
+\restoregame{mainline} \hidemoves{29. Qc8+}
+
+\mainline{29...Kg7 30. Qc4 Bd8 31. cxb4 axb4}
+On \variation{31... Qxb4 32. Qe2} 
+White should draw with best play.
+$$\showboard$$
+
+\end{LTXexample}
+
+\end{document}
+
+
+
+
+
+

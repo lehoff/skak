@@ -1,0 +1,41 @@
+
+
+\documentclass[11pt,twocolumn]{article}
+
+\usepackage[ps,mover]{skak}
+
+\title{test2\\Proper Handling of Opening Spaces in the SAN Input}
+\author{Torben Hoffmann }
+
+\begin{document}
+
+\parindent=0pt
+
+\maketitle
+
+Ulrike Fischer had a problem with opening spaces in the SAN input
+which should be solved in version 1.1.
+
+
+\newgame
+\mainline{1.e4 e5}
+
+\[\showboard\]
+
+\newgame
+\mainline{1. e4 e5}
+
+\[\showboard\]
+
+\newgame
+\mainline{ 1. e4 e5}
+
+\[\showboard\]
+
+\end{document}
+
+
+
+
+
+

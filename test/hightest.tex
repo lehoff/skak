@@ -1,0 +1,309 @@
+%% Name:	hightest.tex
+%% Author:	Dirk Baechle
+%% Date:	2003-01-22
+
+\documentclass[a4paper, twocolumn]{article}
+\usepackage[ps]{skak}
+\tinyboard
+
+\setlength{\parindent}{0pt}
+
+\def\square#1{\texttt{#1}}
+\def\testarrow#1#2{%
+  \printarrow{#1}{#2}
+  \mbox{\texttt{(#1 -> #2)}}}
+
+\def\testknightmove#1#2{%
+  \printknightmove{#1}{#2}
+  \mbox{\texttt{(#1 -> #2)}}}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\section{Test of the ``\texttt{highlight}'' command}
+
+In all following boards there should appear
+
+\begin{itemize}
+\item frames on \square{g1}, \square{f2} and \square{e3}
+\item a small cross on \square{a1},
+\item a large cross on \square{a8},
+\item a small circle on \square{h1} and
+\item a large circle on \square{h8}.
+\end{itemize}
+
+\subsection{White to move}
+\subsubsection{With notation}
+
+\fenboard{2rr3k/pp3pp1/1nnqbN1p/3pN3/2pP4/2P3Q1/PPB4P/R4RK1 w KQkq - 0 1}
+\centerline{\showboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\medskip
+\centerline{\showinverseboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\subsubsection{Without notation}
+\notationOff
+
+\centerline{\showboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\medskip
+\centerline{\showinverseboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\subsubsection{With mover}
+\showmoverOn
+\notationOn
+
+\centerline{\showboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\medskip
+\centerline{\showinverseboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\notationOff
+\medskip
+\centerline{\showboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\medskip
+\centerline{\showinverseboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\subsection{Black to move}
+\subsubsection{With notation}
+\notationOn
+\showmoverOff
+\fenboard{2rr3k/pp3pp1/1nnqbN1p/3pN3/2pP4/2P3Q1/PPB4P/R4RK1 b KQkq - 0 1}
+\centerline{\showboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\medskip
+\centerline{\showinverseboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\subsubsection{Without notation}
+\notationOff
+
+\centerline{\showboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\medskip
+\centerline{\showinverseboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\subsubsection{With mover}
+\showmoverOn
+\notationOn
+
+\centerline{\showboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\medskip
+\centerline{\showinverseboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\notationOff
+\medskip
+\centerline{\showboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\medskip
+\centerline{\showinverseboard}
+\highlight{g1,f2,e3}
+\highlight[x]{a1}
+\highlight[X]{a8}
+\highlight[o]{h1}
+\highlight[O]{h8}
+
+\section{Test of the ``\texttt{printarrow}'' command}
+
+%% Init board
+\notationOn
+\showmoverOff
+\fenboard{2rr3k/pp3pp1/1nnqbN1p/3pN3/2pP4/2P3Q1/PPB4P/R4RK1 w KQkq - 0 1}
+
+\subsection{From lower to upper half}
+
+\centerline{\showboard}
+\testarrow{a1}{a8}
+\testarrow{f3}{e6}
+\testarrow{g4}{h7}
+
+\newpage
+\centerline{\showinverseboard}
+\testarrow{a1}{a8}
+\testarrow{f3}{e6}
+\testarrow{g4}{h7}
+
+\subsection{From upper to lower half}
+\centerline{\showboard}
+\testarrow{h8}{h1}
+\testarrow{f7}{c2}
+\testarrow{b6}{g3}
+
+\medskip
+\centerline{\showinverseboard}
+\testarrow{h8}{h1}
+\testarrow{f7}{c2}
+\testarrow{b6}{g3}
+
+\subsection{From left to right half}
+\centerline{\showboard}
+\testarrow{a1}{h1}
+\testarrow{b2}{h8}
+\testarrow{c7}{g3}
+
+\medskip
+\centerline{\showinverseboard}
+\testarrow{a1}{h1}
+\testarrow{b2}{h8}
+\testarrow{c7}{g3}
+
+\subsection{From right to left half}
+\centerline{\showboard}
+\testarrow{h8}{a8}
+\testarrow{g6}{a4}
+\testarrow{f3}{c5}
+
+\medskip
+\centerline{\showinverseboard}
+\testarrow{h8}{a8}
+\testarrow{g6}{a4}
+\testarrow{f3}{c5}
+
+\section{Test of the ``\texttt{printknightmove}'' command}
+
+\subsection{Upwards}
+\centerline{\showboard}
+\testknightmove{d4}{b5}
+\testknightmove{d4}{c6}
+\testknightmove{d4}{e6}
+\testknightmove{d4}{f5}
+
+\medskip
+\centerline{\showinverseboard}
+\testknightmove{d4}{b5}
+\testknightmove{d4}{c6}
+\testknightmove{d4}{e6}
+\testknightmove{d4}{f5}
+
+\subsection{Downwards}
+\centerline{\showboard}
+\testknightmove{e6}{c5}
+\testknightmove{e6}{d4}
+\testknightmove{e6}{f4}
+\testknightmove{e6}{g5}
+
+\medskip
+\centerline{\showinverseboard}
+\testknightmove{e6}{c5}
+\testknightmove{e6}{d4}
+\testknightmove{e6}{f4}
+\testknightmove{e6}{g5}
+
+\subsection{To the right}
+\centerline{\showboard}
+\testknightmove{b4}{c6}
+\testknightmove{b4}{d5}
+\testknightmove{b4}{d3}
+\testknightmove{b4}{c2}
+
+\medskip
+\centerline{\showinverseboard}
+\testknightmove{b4}{c6}
+\testknightmove{b4}{d5}
+\testknightmove{b4}{d3}
+\testknightmove{b4}{c2}
+
+\subsection{To the left}
+\centerline{\showboard}
+\testknightmove{f5}{e7}
+\testknightmove{f5}{d6}
+\testknightmove{f5}{d4}
+\testknightmove{f5}{e3}
+
+\medskip
+\centerline{\showinverseboard}
+\testknightmove{f5}{e7}
+\testknightmove{f5}{d6}
+\testknightmove{f5}{d4}
+\testknightmove{f5}{e3}
+
+\subsection{From the corners}
+\centerline{\showboard}
+\testknightmove{a1}{b3}
+\testknightmove{a1}{c2}
+\testknightmove{a8}{c7}
+\testknightmove{a8}{b6}
+\testknightmove{h8}{g6}
+\testknightmove{h8}{f7}
+\testknightmove{h1}{g3}
+\testknightmove{h1}{f2}
+
+\end{document}
+

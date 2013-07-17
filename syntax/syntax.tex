@@ -1,0 +1,321 @@
+\documentclass[a4paper]{article}
+
+\usepackage{skak}
+
+\def\package#1{``\textsf{#1}''}
+\def\command#1{``\texttt{\symbol{92}#1}''}
+\def\commandwarg#1#2{\texttt{\symbol{92}#1}\{\textit{#2}\}}
+\def\base#1{$_{\scriptscriptstyle #1}$}
+\def\abbrev#1{\textsf{#1}}
+\def\bnf#1{\textit{#1}}
+\def\bnfterm#1{\textbf{#1}}
+\def\bnfprod{$\rightarrow$}
+\def\bnfempty{$\epsilon$}
+\def\bnfor{$|$}
+\def\bnfjoin{$\bowtie$}
+
+\setlength{\parindent}{0pt}
+
+\title{The Syntax of Chess Moves in the \LaTeX{} Package \package{skak} (Draft)}
+\author{Dirk B\"achle}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This short document contains some thoughts and ideas about the ``to be supported''
+syntax of chess moves, including SAN (Short Algebraic Notation) as well as LAN
+(Long Algebraic Notation). 
+
+The main purpose of this draft is to specify a concrete set of allowed chess moves.
+In the next step, extensive test routines for this syntax should be generated
+that can be used to verify the final implementation\ldots
+\end{abstract}
+
+\section*{Stage 1: Parsing \command{mainline}/\command{variation}}
+
+The commands \command{mainline} and \command{variation} should accept
+a nonemtpy list of space separated ``move tokens'' (\abbrev{MT}):
+
+\medskip
+\hfil\commandwarg{mainline}{MT\_list}\hfil or \hfil\commandwarg{variation}{MT\_list}\hfil
+
+where
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{MT\_list} \bnfprod\={} \bnf{MT} \bnfterm{space} \bnf{MT\_list}\\
+ \>\bnfor{} \bnf{MT}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+using BNF (Backus-Naur Form) notation with `\bnfterm{space}' as the
+terminal symbol for the character '\ ' (ASCII code 
+32\base{10}).
+
+\section*{Stage 2: Splitting off move numbers}
+
+Each \abbrev{MT} may be either a chess move (\abbrev{CM}), a move number (\abbrev{MN})
+or a token like ``\texttt{2.Kg1}'' that combines both:
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{MT} \bnfprod\={} \bnf{MN} \bnf{CM}\\
+ \>\bnfor{} \bnf{CM}\\
+ \>\bnfor{} \bnf{MN}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+The only task of this stage is to separate ``combined tokens'' (first rule in the
+production above) and, therefore, supply the next stage 3 with a steady stream
+of single move tokens (\abbrev{M}). 
+
+\begin{quote}
+Remark: This ``separation'' probably has to be done by inspecting the whole
+token character for character. Thus, it appears to be efficient to already
+collect information about the move number \abbrev{MN} (White/Black to move,
+getting the number itself, suppressing leading zeros) in this early stage\ldots
+\end{quote}
+
+No semantic checking is done here, i.e.~this stage doesn't
+detect errors like \mbox{``\texttt{2.~Kg1 3.~Bf4}''}.
+
+\section*{Stage 3: Parsing single move tokens}
+
+At this point, we can be sure to get either a chess move \abbrev{CM}
+or a move number \abbrev{MN}:
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{M} \bnfprod\={} \bnf{CM}\\
+ \>\bnfor{} \bnf{MN}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+Both can be distinguished well by inspecting the first character of the token, since
+only move numbers \abbrev{MN} may start with a digit (\abbrev{D}).
+
+This stage would be the right place to check for the correct order
+of chess moves and move numbers, i.e.~if a \abbrev{MN} is encountered
+the right side (White or Black) should be to move.
+
+\section*{Parsing move numbers}
+
+Move numbers \abbrev{MN} consist of an integer value (\abbrev{N}), immediately
+followed by one or three dots as terminal symbols, signalling whether it's
+Whites or Blacks move.
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{MN} \bnfprod\={} \bnf{N} \bnfterm{...}\\
+ \>\bnfor{} \bnf{N} \bnfterm{.}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+An integer value \abbrev{N} is a nonempty list of single digits 
+(\abbrev{D})\ldots
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{N} \bnfprod\={} \bnf{D} \bnf{N}\\
+ \>\bnfor{} \bnf{D}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+\ldots where each digit \abbrev{D} should be contained in the set of terminal
+symbols 0--9.
+
+\begin{center}
+\begin{minipage}{5cm}
+\begin{tabbing}
+\bnf{D} \bnfprod\={} \bnfterm{0}\bnfor\bnfterm{1}\bnfor\bnfterm{2}%
+\bnfor\bnfterm{3}\bnfor\bnfterm{4}\bnfor\bnfterm{5}\bnfor\bnfterm{6}%
+\bnfor\bnfterm{7}\bnfor\bnfterm{8}\bnfor\bnfterm{9}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+Here, the move number can be checked against the internal move counter
+if necessary.
+
+\section*{Parsing chess moves}
+
+A chess move \abbrev{CM} starts with the ``move specification'' (\abbrev{MS}),
+giving information about the piece that is to move and the source and
+destination squares. Additionally, an arbitrary number of character tokens may follow
+as a move comment (\abbrev{MC}). So, after enough ``hints'' for executing the move
+are collected, i.e.~\abbrev{MS} was ``matched'', the rest of the token is regarded
+as comment \abbrev{MC} and is output unchanged.
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{CM} \bnfprod\={} \bnf{MS} \bnf{MC}\\
+ \>\bnfor{} \bnf{MS}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+Before defining the move specification \abbrev{MS} itself a few helping nonterminal
+symbols are introduced. Please, remember that bold characters within
+the ``rules'' denote terminal symbols\ldots
+
+\begin{enumerate}
+\item A ``piece'' character (\abbrev{P})
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{P} \bnfprod\={} \bnfterm{K}\bnfor\bnfterm{Q}\bnfor\bnfterm{B}%
+\bnfor\bnfterm{N}\bnfor\bnfterm{R}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+Remark: This definition uses the english letters for the single pieces. The
+real implementation should be independent of the used language.
+
+\item A ``file'' character (\abbrev{f})
+
+\begin{center}
+\begin{minipage}{5cm}
+\begin{tabbing}
+\bnf{f} \bnfprod\={} \bnfterm{a}\bnfor\bnfterm{b}\bnfor\bnfterm{c}%
+\bnfor\bnfterm{d}\bnfor\bnfterm{e}\bnfor\bnfterm{f}\bnfor\bnfterm{g}%
+\bnfor\bnfterm{h}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+\item A ``rank'' character (\abbrev{r})
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{r} \bnfprod\={} \bnfterm{1}\bnfor\bnfterm{2}\bnfor\bnfterm{3}%
+\bnfor\bnfterm{4}\bnfor\bnfterm{5}\bnfor\bnfterm{6}\bnfor\bnfterm{7}%
+\bnfor\bnfterm{8}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+\item A ``capture'' character (\bnfjoin)
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnfjoin{} \bnfprod\={} \bnfterm{-}\\
+ \>\bnfor{} \bnfterm{x}\\
+ \>\bnfor{} \bnfempty
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+where '\bnfempty' denotes the ``empty symbol''.
+
+\end{enumerate}
+
+
+Move specifications (\abbrev{MS}) can be subdivided into the following groups:
+
+\begin{itemize}
+\item Starting with a ``piece'' character
+
+\begin{itemize}
+\item With source square
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{MS} \bnfprod\={} \bnf{P} \bnf{f} \bnf{r} \bnfjoin{} \bnf{f} \bnf{r}\\
+ \>\bnfor{} \bnf{P} \bnf{f} \bnfjoin{} \bnf{f} \bnf{r}\\
+ \>\bnfor{} \bnf{P} \bnf{r} \bnfjoin{} \bnf{f} \bnf{r}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+Examples: ``\texttt{Qf3-f4}'', ``\texttt{Ree6}'', ``\texttt{N1xc3}''
+\item Only a destination square present
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{MS} \bnfprod\={} \bnf{P} \bnfjoin{} \bnf{f} \bnf{r}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+Example: ``\texttt{Nxc4}''
+\end{itemize}
+
+\item Without leading ``piece'' character
+
+\begin{itemize}
+\item With source square
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{MS} \bnfprod\={} \bnf{f} \bnf{r} \bnfjoin{} \bnf{f} \bnf{r} \bnf{P}\\
+ \>\bnfor{} \bnf{f} \bnfjoin{} \bnf{f} \bnf{r} \bnf{P}\\
+ \>\bnfor{} \bnf{f} \bnf{r} \bnfjoin{} \bnf{f} \bnf{r}\\
+ \>\bnfor{} \bnf{f} \bnfjoin{} \bnf{f} \bnf{r}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+Examples: ``\texttt{f7-f8R}'', ``\texttt{dxe8B}'', ``\texttt{g2-g4}'', 
+``\texttt{fxe6}''
+\item Only a destination square present
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{MS} \bnfprod\={} \bnf{f} \bnf{r} \bnf{P}\\
+ \>\bnfor{} \bnf{f} \bnf{r}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+Examples: ``\texttt{e8R}'', ``\texttt{a6}''
+\end{itemize}
+
+
+\item Castlings
+
+\begin{center}
+\begin{minipage}{3cm}
+\begin{tabbing}
+\bnf{MS} \bnfprod\={} \bnfterm{O-O-O}\\
+ \>\bnfor{} \bnfterm{O-O}
+\end{tabbing}
+\end{minipage}
+\end{center}
+
+Both of these terminals use the letter 'O' (ASCII code 
+79\base{10}) and not the digit '0'
+(ASCII code 48\base{10})!
+\end{itemize}
+
+\section*{Final remark}
+
+This text tries to provide only the syntax for the frontend of the new ``move
+machine''. All the things that happen after the input was ``matched'' and
+information was drawn out of the given ``chess moves'' to the largest extent,
+i.e.~the semantic actions, are beyond the scope of this document.
+
+So, at the moment it is perfectly legal and syntactically correct to say
+``\texttt{4. gxf8K}''\ldots
+
+\end{document}
+

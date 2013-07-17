@@ -1,0 +1,1146 @@
+% Filename: Lambda.tex
+% Author: Alan Jeffrey
+% Last modified: 11 May 1990
+%
+% Copyright (c) 1990 Alan Jeffrey.  Permission is granted to Tugboat
+% to publish any or all of this.
+%
+% A keyboard check:
+%
+%     @ # $ % ^ & * ~   at hash dollar percent caret ampersand asterisk tilde
+%     : ; , .           colon semicolon comma period 
+%     ? !               question-mark exclamation-mark
+%     " ' `             double-quote apostrophe back-quote
+%     ( ) { } [ ]       parentheses braces square-brackets 
+%     - + = / \         minus plus equals forward-slash backslash
+%     _ | < >           underscore vertical-bar less-than greater-than
+%
+
+\documentstyle[ltugboat,Lambda]{article}
+
+% This document defines a whole load of extra commands, some of which
+% over-ride how LaTeX normally lays things out.  For example, ~ is
+% redefined to give a hairspace in math mode.  This whole document
+% should probably be put in a group to stop it getting in the way 
+% of other articles' macros.
+
+\title{Lists in \TeX's Mouth}
+
+\author{Alan Jeffrey}
+
+\address{Programming Research Group\\
+         Oxford University\\
+         11 Keble Road\\
+         Oxford OX1 3QD}
+
+\netaddress{Alan.Jeffrey@uk.ac.oxford.prg}
+
+\makeatletter
+
+% The mathcodes for the letters A, ..., Z, a, ..., z are changed to
+% generate text italic rather than math italic by default. This makes
+% multi-letter names look neater. The mathcode for character 'c'
+% is set to "7000 (variable family) + "400 (text italic) + c.
+% 
+% This neat bit of code is due to Mike Spivey.
+
+\def\@setmcodes#1#2#3{{\count0=#1 \count1=#3
+        \loop \global\mathcode\count0=\count1 \ifnum \count0<#2
+        \advance\count0 by1 \advance\count1 by1 \repeat}}
+
+\@setmcodes{`A}{`Z}{"7441}
+\@setmcodes{`a}{`z}{"7461}
+
+\def\Number#1{\csname Number-#1\endcsname}
+\def\Label#1{\csname Label-#1\endcsname}
+
+\newcount\Lastnum
+
+\def\Forward#1%
+   {\global\advance\Lastnum by 1
+    \csnameafter\xdef{Number-#1}%
+       {\the\Lastnum}%
+    \csnameafter\xdef{Label-\the\Lastnum}%
+       {\@currentlabel}}
+
+\def\csnameafter#1#2%
+   {\expandafter#1\csname#2\endcsname}
+
+\def\Bylist#1%
+   {\Map\Label
+      {\Insertsort\Lessthan
+         {\Map\Number{#1}}}}
+
+\def\By{\Show\Bylist}
+
+\let\bindspace=~
+\def~{\ifmmode \, \else \bindspace \fi}
+
+\def\start#1{\lefteqn{#1}\quad\\}
+
+\def\nil{[\,\,]}
+
+\newtheorem{fact}{Fact}
+\def\thefact{\@roman\c@fact}
+
+\def\cstok#1{\leavevmode\thinspace\hbox{\vrule\vtop{\vbox{\hrule\kern1pt
+        \hbox{\vphantom{\tt/}\thinspace{\tt#1}\thinspace}}%
+      \kern1pt\hrule}\vrule}\thinspace}
+
+\begingroup \catcode `|=0 \catcode `[= 1
+\catcode`]=2 \catcode `\{=12 \catcode `\}=12
+\catcode`\\=12 |gdef|@xTeXcode#1\end{TeXcode}[#1|end[TeXcode]]
+|endgroup
+
+\def\TeXcode
+   {\@verbatim \smallskip\hrule\medskip \frenchspacing\@vobeyspaces \@xTeXcode}
+\def\endTeXcode
+   {\medskip\hrule\smallskip\endtrivlist}
+
+\makeatother
+
+\begin{document}
+
+\maketitle
+
+\section{Why lists?}
+
+Originally, I wanted lists in \TeX\ for
+a paper I was writing which contained a lot of facts.
+\begin{fact}
+\Forward{Fac-cows}
+   Cows have four legs.
+\end{fact}
+\begin{fact}
+\Forward{Fac-people}
+   People have two legs.
+\end{fact}
+\begin{fact}
+\Forward{Fac-yawn}
+   Lots of facts in a row can be dull.
+\end{fact}
+These are generated with commands like
+\begin{verbatim}
+\begin{fact}
+\Forward{Fac-yawn}
+   Lots of facts in a row can be dull.
+\end{fact}
+\end{verbatim}
+I can then refer to these facts by saying
+\begin{verbatim}
+\By[Fac-yawn,Fac-cows,Fac-people]
+\end{verbatim}
+to get 
+\By[Fac-yawn,Fac-cows,Fac-people].
+And as if by magic, the facts come out sorted, rather than in
+the jumbled order I typed them.  This is very useful, as I can
+reorganize my document to my heart's content, and not have to worry
+about getting my facts straight.  
+
+Originally I tried programming this sorting routine in \TeX's
+list macros, from Appendix~D of \TB, but I soon ran into trouble.
+The problem is that all the Appendix~D macros work by assigning
+values to macros.  For example:
+\begin{verbatim}
+\concatenate\foo=\bar\baz
+\end{verbatim}
+expands out to
+\begin{verbatim}
+\ta=\expandafter{\bar}
+\tb=\expandafter{\baz}
+\edef\foo{\the\ta\the\tb}
+\end{verbatim}
+which assigns the macro \verb|\foo| the contents of \verb|\bar|
+followed by the contents of \verb|\baz|.  Programming sorting routines
+(which are usually recursive) in terms of these lists became rather
+painful, as I was constantly having to watch out for local variables,
+worrying about what happened if a local variable had the same name
+as a global one, and generally having a hard time.
+
+Then I had one of those ``flash of light'' experiences ---
+``You can do lambda-calculus in \TeX,'' I thought,
+and since you can do lists directly in lambda calculus, 
+you should be able to do lists straightforwardly in \TeX.  And so you
+can.  Well, fairly straightforwardly anyway.
+
+So I went and did a bit of mathematics, and derived the \TeX\ macros
+you see here.  They were formally verified, and worked first time
+(modulo typing errors, of which there were two).
+
+\section{\TeX's mouth and \TeX's stomach}
+
+\TeX's programming facilities come in two forms --- there are \TeX's
+{\em macros\/} which are expanded in its mouth, and some additional 
+{\em assignment\/} operations like \verb|\def| which take place in the
+stomach.  \TeX\ can often spring surprises on you as exactly what
+gets evaluated where.
+For example, in \LaTeX\ I can put down a
+label by saying \verb|\label{Here}|.
+\label{Here}
+Then I can refer back to that label by saying
+\verb|Section~\ref{Here}|, which
+produces Section~\ref{Here}.  Unfortunately, \verb|\ref{Here}| does
+{\em not\/} expand out to {\tt\ref{Here}}!  Instead, it expands out to:
+\begin{verbatim}
+\edef\@tempa{\@nameuse{r@Here}}
+\expandafter\@car\@tempa\@nil\null
+\end{verbatim}
+This means that I can't say 
+\begin{verbatim}
+\ifnum\ref{Here}<4 Hello\fi
+\end{verbatim} 
+and hope that this will expand out to Hello.  Instead I 
+get an error message.  Which is rather a pity, as \TeX's mouth is
+quite a powerful programming language (as powerful as a Turing Machine in
+fact).  
+
+\section{Functions}
+
+A {\em function\/} is a mathematical object that takes in an argument
+(which could well be another function) and returns some other mathematical
+object.  For example the function $Not$ takes in a boolean and returns
+its complement.  I'll write function application without brackets,
+so $Not~b$ is the boolean complement of $b$.  
+
+Function application
+binds to the left, so $f~a~b$ is $(f~a)~b$ rather than $f~(a~b)$.
+For example, $Or~a~b$ is the boolean or of $a$ and $b$, and
+$Or~True$ is a perfectly good function that takes in a boolean
+and returns $True$.
+
+The obvious equivalents of functions in \TeX\ are macros ---
+if I define a function $Foo$ to be:
+\begin{eqnarray*}
+   Foo~x  &  =  &  True
+\end{eqnarray*}
+then it can be translated into \TeX\ as:
+\begin{verbatim}
+\def\Foo#1{\True}
+\end{verbatim}
+So where $Foo$ is a function that takes in one argument, \verb|\Foo|
+is a macro that takes in one parameter.  Nothing has changed except
+the jargon and the font.  \TeX\ macros can even be partially applied,
+for example if we defined:
+\begin{eqnarray*}
+   Baz  &  =  &  Or~True
+\end{eqnarray*}
+then the \TeX\ equivalent would be
+\begin{verbatim}
+\def\Baz{\Or\True}
+\end{verbatim}
+Once \verb|\Baz| is expanded, it will expect to be given a parameter,
+but when we are defining things, we can go around partially applying
+them all we like.
+
+Here, I'm using $=$ without formally defining it, which is rather
+naughty.  If I say $x = y$, this means 
+``given enough parameters, $x$ and $y$ will eventually
+expand out to the same thing.''  For example $Foo = Baz$, because
+for any $x$,
+\begin{eqnarray*}
+   \start{Foo~x}
+   &  =  &  True  \\
+   &  =  &  Or~True~x  \\
+   &  =  &  Baz~x
+\end{eqnarray*}
+Normally, functions have to {respect equality\/} which means that:
+\begin{itemize}
+\item if $x = y$ then $f~x = f~y$, and
+\item if $x$ respects equality, then $f~x$ respects equality.
+\end{itemize}
+However, some \TeX\ control sequences don't obey this.  For example,
+\verb|\string\Foo| and \verb|\string\Baz| are different, even though
+$Foo = Baz$.  Hence $string$ doesn't respect equality.
+Unless otherwise stated, we won't assume functions respect equality,
+although all the functions defined here do.
+
+All of our functions have capital letters, so that their \TeX\ equivalents
+(\verb|\Not|, \verb|\Or| and so on) don't clash with standard \TeX\ or
+\LaTeX\ macros.
+
+\subsection{Identity}
+
+The simplest function is the {\em identity\/} function, called
+$Identity$ funnily enough, which is defined:
+\begin{eqnarray*}
+   Identity~x  &  =  &  \Identity{x}
+\end{eqnarray*}
+This, it must be admitted, is a pretty dull function, but
+it's a useful basic combinator.  It can be implemented
+in \TeX\ quite simply.
+\begin{TeXcode}
+\def\Identity#1{#1}
+\end{TeXcode}
+The rules around this definition mean that it is actually part of
+\verb|Lambda.sty| and not just another example.
+
+\subsection{Error}
+
+Whereas $Identity$ does nothing in a fairly pleasant sort of way,
+$Error$ does nothing in a particularly brutal and harsh fashion.
+Mathematically, $Error$ is the function that destroys everything
+else in front of it.  It is often written as $\perp$.
+\begin{eqnarray*}
+   Error~x  &  =  &  Error
+\end{eqnarray*}
+In practice, destroying the entire document when we hit one error
+is a bit much, so we'll just print out an error message.
+The user can carry on past an error at their own risk, as the code
+will no longer be formally verified.
+\begin{TeXcode}
+\def\Error
+   {\errmessage{Abandon verification all 
+                ye who enter here}}
+\end{TeXcode}
+Maybe this function ought to return a more useful error message \ldots
+
+\subsection{First and Second}
+
+Two other basic functions are $First$ and $Second$, both of which
+take in two arguments, and do the obvious thing.  They are defined:
+\begin{eqnarray*}
+    First~x~y  &  =  &  x  \\
+   Second~x~y  &  =  &  y
+\end{eqnarray*}
+We could, in
+fact, define $Second$ in terms of $Identity$ and $First$.  
+For any $x$ and $y$,
+\begin{eqnarray*}
+   \start{First~Identity~x~y}  
+   &  =  &  Identity~y  \\
+   &  =  &  y  \\
+   &  =  &  Second~x~y
+\end{eqnarray*}
+So $First~Identity = Second$.  This means that anywhere in our \TeX\ code
+we have \verb|\First\Identity| we could replace it by \verb|\Second|.
+This is perhaps not the most astonishing \TeX\ fact known to humanity,
+but this sort of proof did enable more complex bits of \TeX\ to be
+verified before they were run.
+
+The \TeX\ definitions of \verb|\First| and \verb|\Second| are pretty
+obvious.
+\begin{TeXcode}
+\def\First#1#2{#1}
+\def\Second#1#2{#2}
+\end{TeXcode}
+Note that in \TeX\, \verb|\First\foo\bar| expands out to
+\verb|\foo| {\em without\/} expanding out \verb|\bar|.
+This is very useful, as we can write macros that would take
+forever and a day to run if they expanded all their arguments,
+but which actually terminate quite quickly.  This is called
+{\em lazy evaluation\/} by the functional programming community.
+
+\subsection{Compose}
+
+Given two functions $f$ and $g$ we would like to be able to {\em compose\/}
+them to produce a function that first applies $g$ then applies $f$.
+Normally, this is written as $f \circ g$, but unfortunately \TeX\ doesn't
+have infix functions, so we'll have to write it $Compose~f~g$.
+\begin{eqnarray*}
+   Compose~f~g~x  &  =  &  f~(g~x)
+\end{eqnarray*}
+>From this definition, we can deduce that $Compose$ is associative:
+\begin{eqnarray*}
+   \start{Compose~(Compose~f~g)~h}  
+   &  =  &  Compose~f~(Compose~g~h)
+\end{eqnarray*}
+and $Identity$ is the left unit of $Compose$:
+\begin{eqnarray*}
+        Compose~Identity~f  &  =  &  f 
+\end{eqnarray*}
+The reader may wonder why $Identity$ is called a {\em left\/} unit
+even though it occurs on the right of the $Compose$ --- this is a side-effect
+of using prefix notations where infix is more normal.  The infix version
+of this equation is:
+\begin{eqnarray*}
+   Identity \circ f  &  =  &  f
+\end{eqnarray*}
+so $Identity$ is indeed on the left of the composition.
+
+$Compose$ can be implemented in \TeX\ as
+\begin{TeXcode}
+\def\Compose#1#2#3{#1{#2{#3}}}
+\end{TeXcode}
+
+\subsection{Twiddle}
+
+Yet another useful little function is $Twiddle$, which takes in 
+a function and reverses the order that function takes its (first two)
+arguments.
+\begin{eqnarray*}
+   Twiddle~f~x~y  &  =  &  f~y~x
+\end{eqnarray*}
+Again, there aren't many immediate uses for such a function, but it'll
+come in handy later on.  It satisfies the properties
+\begin{eqnarray*}
+              Twiddle~First  &  =  &  Second  \\
+             Twiddle~Second  &  =  &  First  \\
+    Compose~Twiddle~Twiddle  &  =  &  Identity
+\end{eqnarray*}
+Its \TeX\ equivalent is
+\begin{TeXcode}
+\def\Twiddle#1#2#3{#1{#3}{#2}}
+\end{TeXcode}
+This function is called ``twiddle'' because it is sometimes written
+$\widetilde f$ (and $\sim$ is pronounced ``twiddle'').  
+It also twiddles its arguments around,
+which is quite nice if your sense of humour runs to appalling puns.
+
+\section{Booleans}
+
+As we're trying to program a sorting routine, it would be nice to
+be able to define orderings on things, and to do this we need some
+representation of boolean variables.  Unfortunately \TeX\ doesn't have a type
+for booleans, so we'll have to invent our own.  We'll
+implement a boolean as a function $b$ of the form
+\begin{eqnarray*}
+   b~x~y  &  
+   =  &  
+   \left\{
+      \begin{array}{ll}
+         x  &  \mbox{if $b$ is true}  \\
+         y  &  \mbox{otherwise}
+      \end{array}
+   \right.
+\end{eqnarray*}
+More formally, a 
+boolean $b$ is a function which respects equality,
+such that for all $f$, $g$ and $z$:
+\begin{eqnarray*}
+   b~f~g~z  &  =  &  b~(f~z)~(g~z)
+\end{eqnarray*}
+and for all $f$ and $g$ which respect equality,
+\begin{eqnarray*}
+   b~(f~b)~(g~b)  &  =  &  b~(f~First)~(g~Second)
+\end{eqnarray*}
+All the functions in this section satisfy these properties.  Surprisingly
+enough, so does $Error$, which is quite useful, as it allows us to 
+reason about booleans which ``go wrong''.  
+
+\subsection{True, False and Not}
+
+Since we are implementing booleans as functions, we already have the
+definitions of $True$, $False$ and $Not$.
+\begin{eqnarray*}
+    True  &  =  &  First  \\
+   False  &  =  &  Second  \\
+     Not  &  =  &  Twiddle
+\end{eqnarray*}
+So for free we get the following results:
+\begin{eqnarray*}
+          Not~True  &  =  &  False  \\
+         Not~False  &  =  &  True  \\
+   Compose~Not~Not  &  =  &  Identity  
+\end{eqnarray*}
+The \TeX\ implementation is not exactly difficult:
+\begin{TeXcode}
+\let\True=\First
+\let\False=\Second
+\let\Not=\Twiddle
+\end{TeXcode}
+
+\subsection{And and Or}
+
+The definitions of $And$ and $Or$ are:
+\begin{eqnarray*}
+   And~a~b  &  
+   =  &  
+   \left\{
+      \begin{array}{ll}
+         b      &  \mbox{if $a$ is true}  \\
+         False  &  \mbox{otherwise}
+      \end{array}
+   \right.
+   \\
+   Or~a~b  &  
+   =  &  
+   \left\{
+      \begin{array}{ll}
+         True   &  \mbox{if $a$ is true}  \\
+         b      &  \mbox{otherwise}
+      \end{array}
+   \right.
+\end{eqnarray*}
+With our definition of what a boolean is, this is just the same as
+\begin{eqnarray*}
+   And~a~b  &  =  &  a~b~False  \\
+    Or~a~b  &  =  &  a~True~b
+\end{eqnarray*}
+>From these conditions, we can show that $And$ is associative, and 
+has left unit $True$ and left zeros $False$ and $Error$:
+\begin{eqnarray*}
+   And~(And~a~b)~c  &  =  &  And~a~(And~b~c)  \\
+        And~True~b  &  =  &  b  \\
+       And~False~b  &  =  &  False  \\
+       And~Error~b  &  =  &  Error
+\end{eqnarray*}
+$Or$ is associative, has left unit $False$ and left zeros $True$ and $Error$:
+\begin{eqnarray*}
+   Or~(Or~a~b)~c  &  =  &  Or~a~(Or~b~c)  \\
+      Or~False~b  &  =  &  b  \\
+       Or~True~b  &  =  &  True  \\
+      Or~Error~b  &  =  &  Error
+\end{eqnarray*}
+De~Morgan's laws hold:
+\begin{eqnarray*}
+   Not~(And~a~b)  &  =  &  Or~(Not~a)~(Not~b)  \\
+    Not~(Or~a~b)  &  =  &  And~(Not~a)~(Not~b)  
+\end{eqnarray*}
+and $And$ and $Or$ left-distribute through one another:
+\begin{eqnarray*}
+   Or~a~(And~b~c)  &  =  &  And~(Or~a~b)~(Or~a~c)  \\
+   And~a~(Or~b~c)  &  =  &  Or~(And~a~b)~(And~a~c)
+\end{eqnarray*}
+$And$ and $Or$ are {\em not\/} commutative, though.  For example,
+\begin{eqnarray*}
+   \start{Or~True~Error}  
+   &  =  &  True~True~Error  \\
+   &  =  &  True
+\end{eqnarray*}
+but
+\begin{eqnarray*}
+   \start{Or~Error~True}  
+   &  =  &  Error~True~True \\
+   &  =  &  Error
+\end{eqnarray*}
+This is actually quite useful since there are some booleans that
+need to return an error occasionally.  If $a$ is $True$ when $b$ 
+is safe (i.e.\ doesn't become $Error$) and is $False$ otherwise, we can
+say $Or~a~b$ and know we're not going to get an error.  This is handy
+for things like checking for division by zero, or trying to get the
+first element of an empty list.
+
+Similarly, because of the possibility of $Error$,
+$And$ and $Or$ don't right-distribute through each other,
+as
+\begin{eqnarray*}
+   \start{Or~(And~False~Error)~True}
+   &  \ne  &  And~(Or~False~True)~(Or~Error~True)
+\end{eqnarray*}
+As errors shouldn't crop up, this needn't worry us too much.
+\begin{TeXcode}
+\def\And#1#2{#1{#2}\False}
+\def\Or#1#2{#1\True{#2}}
+\end{TeXcode}
+
+\subsection{Lift}
+
+Quite a lot of the time we won't be dealing with booleans, but with
+{\em predicates}, which are just functions that return a boolean.
+For example, the predicate $Lessthan$ is defined below so that
+$Lessthan~i~j$ is true whenever $i<j$.
+Given a predicate $p$ we would like to be able to 
+{\em lift\/} it to $Lift~p$, defined:
+\begin{eqnarray*}
+   Lift~p~f~g~x  &  =  &  p~x~f~g~x
+\end{eqnarray*}
+For example, $Lift~(Lessthan~0)~f~g$ takes in a number and applies
+$f$ to it if it is positive and $g$ to it otherwise.  This is quite
+useful for defining functions.
+\begin{TeXcode}
+\def\Lift#1#2#3#4{#1{#4}{#2}{#3}{#4}}
+\end{TeXcode}
+
+\subsection{Lessthan and \TeX if}
+
+Finally, we would like to be able to use \TeX's built-in booleans
+as well as our own.  For example, we would like a predicate
+$Lessthan$ such that:
+\begin{eqnarray*}
+   Lessthan~i~j  &  
+   =  &
+   \left\{
+      \begin{array}{ll}
+         True   &  \mbox{if } i < j    \\
+         False  &  \mbox{if } i \ge j  \\
+         Error  &  \mbox{otherwise}  
+      \end{array}
+   \right.
+\end{eqnarray*}
+The $Error$ condition happens if we try applying $Lessthan$ to something
+that isn't a number --- $Lessthan~True~False$ is $Error$%
+\footnote
+   {Actually, that's a little white lie --- trying to persuade \TeX\ to
+    do run-time type checking isn't much fun.  So the \TeX\ implementation
+    of this is actually a {\em refinement\/} where the $Error$ condition
+    has been replaced by whatever it is \TeX\ does if you try doing
+    {\tt\string\ifnum $x$ < $y$} when $x$ and $y$ aren't numbers}.
+This is fine as a mathematical definition, but how will
+we implement it?  If we assume we have a macro \verb|\TeXif|,
+which converts \TeX\ if-statements into booleans, we could just
+define:
+\begin{TeXcode}
+\def\Lessthan#1#2{\TeXif{\ifnum#1<#2 }}
+\end{TeXcode}
+So the question is just how to define \verb|\TeXif|.
+Unfortunately, the ``obvious'' code does not work:
+\begin{verbatim}
+\def\TeXif#1#2#3{#1#2\else#3\fi}
+\end{verbatim}
+For example, \verb|\TeXif\iftrue\True\True| doesn't expand out to
+\verb|\True|.  Instead, it expands as:
+\begin{verbatim}
+\TeXif\iftrue\True\True
+   = \iftrue\True\else\True\fi
+   = \True\else\True\fi
+   = \else\fi
+   =
+\end{verbatim}
+Another common \TeX nique is to use a macro \verb|\next| to
+be the expansion text:
+\begin{verbatim}
+\def\TeXif#1#2#3%
+   {#1\def\next{#2}\else\def\next{#3}\fi
+    \next}
+\end{verbatim}
+However, this uses \TeX's stomach to do the \verb|\def|, and we are
+trying to do this using only the mouth.  One (slightly tricky) solution
+is to use pattern-matching to gobble up the offending \verb|\else| and/or
+\verb|\fi|.
+\begin{TeXcode}
+\def\gobblefalse\else\gobbletrue\fi#1#2%
+   {\fi#1}
+\def\gobbletrue\fi#1#2%
+   {\fi#2}
+\def\TeXif#1%
+   {#1\gobblefalse\else\gobbletrue\fi}
+\end{TeXcode}
+So if the \TeX\ if-statement is true, \verb|\gobblefalse| gobbles
+up the false-text, otherwise \verb|\gobbletrue| gobbles up the 
+true-text.  For example,
+\begin{verbatim}
+\TeXif\iftrue\True\True
+   = \iftrue\gobblefalse\else
+         \gobbletrue\fi\True\True
+   = \gobblefalse\else
+         \gobbletrue\fi\True\True
+   = \fi\True
+   = \True
+\end{verbatim}
+Phew.  And so we have booleans.
+
+\section{Lists}
+
+A list is a (possibly infinite) sequence of values.  For example,
+the list $[1,2,3]$ contains three numbers, the list $\nil$ contains
+none, and the list $[1,2,3,\ldots]$ contains infinitely many.
+A list is either {\em empty\/} (written $\nil$) or is comprised
+of a {\em head\/}
+$x$ and a {\em tail\/} $xs$ (in which case it's written $x:xs$).
+For example, $1:2:3:\nil$ is $[1,2,3]$.  
+
+In a similar fashion to the implementation of booleans,
+a list $xs$ is implemented as a function of the form
+\begin{eqnarray*}
+   xs~f~e  &
+   =  &
+   \left\{
+      \begin{array}{ll}
+         e       &  \mbox{if $xs$ is empty}  \\
+         f~y~ys  &  \mbox{if $xs$ has head $y$ and tail $ys$}
+      \end{array}
+   \right.
+\end{eqnarray*}
+Again, we are implementing a datatype as a function, a quite powerful
+trick, just not one usually seen in \TeX.  We will assume that
+whenever a list $x:xs$ is applied to $f$ and $e$, $f~x$ respects equality.
+This allows us to assume that if $xs = ys$ then $x:xs = x:ys$,
+which is handy.  
+
+\subsection{Nil, Cons, Stream and Singleton}
+
+The simplest list is $Nil$, the empty list which we have been writing
+$\nil$.  
+\begin{eqnarray*}
+   Nil  &  =  &  Second
+\end{eqnarray*}
+The other possible list is $Cons~x~xs$, which has head $x$ and tail $xs$.
+\begin{eqnarray*}
+   Cons~x~xs~f~e  &  =  &  f~x~xs
+\end{eqnarray*}
+Every list can be constructed using these functions.
+The list $[1,2,3]$ is $Cons~1~(Cons~2~(Cons~3~Nil))$, and the
+list $[a,a,a,\ldots]$ is $Stream~a$ where $Stream$ is defined:
+\begin{eqnarray*}
+   Stream~a  &  =  &  Cons~a~(Stream~a)
+\end{eqnarray*}
+There's even at least one application for infinite lists,
+as we'll see in Section~\ref{outputroutines}.
+
+The singleton list $[a]$ is $Singleton~a$, defined as:
+\begin{eqnarray*}
+   Singleton~a  &  =  &  Cons~a~Nil
+\end{eqnarray*}
+These all have straightforward \TeX\ definitions.
+\begin{TeXcode}
+\let\Nil=\Second
+\def\Cons#1#2#3#4{#3{#1}{#2}}
+\def\Stream#1{\Cons{#1}{\Stream{#1}}}
+\def\Singleton#1{\Cons{#1}\Nil}
+\end{TeXcode}
+
+\subsection{Head and Tail}
+
+So, we can construct any list we like, but we still can't get any information
+out of it.  To begin with, we'd like to be able to get the head
+and tail of a list.
+\begin{eqnarray*}
+   Head~xs  &  =  &  xs~First~Error  \\
+   Tail~xs  &  =  &  xs~Second~Error
+\end{eqnarray*}
+For example, the tail of $x:xs$ is
+\begin{eqnarray*}
+   \start{Tail~(Cons~x~xs)}  
+   &  =  &  Cons~x~xs~Second~Error  \\
+   &  =  &  Second~x~xs  \\
+   &  =  &  \Tail{\Cons{x}{xs}}
+\end{eqnarray*}
+The tail of $\nil$ is, as one would expect,
+\begin{eqnarray*}
+   \start{Tail~Nil}  
+   &  =  &  Nil~Second~Error  \\
+   &  =  &  Error
+\end{eqnarray*}
+And the head of $Stream~a$ is
+\begin{eqnarray*}
+   \start{Head~(Stream~a)}  
+   &  =  &  Stream~a~First~Error  \\
+   &  =  &  Cons~a~(Stream~a)~First~Error  \\
+   &  =  &  First~a~(Stream~a)  \\
+   &  =  &  \Head{\Stream{a}}
+\end{eqnarray*}
+So we can get the head of an infinite list in finite time.  This is
+fortunate, as otherwise there wouldn't be much point in allowing
+infinite objects. 
+\begin{TeXcode}
+\def\Head#1{#1\First\Error}
+\def\Tail#1{#1\Second\Error}
+\end{TeXcode}
+
+\subsection{Foldl and Foldr}
+
+Using $Head$ and $Tail$ we can get at the beginning of any non-empty list,
+but in general we need more information than that.  Rather than write
+a whole bunch of recursive functions on lists, I'll implement two
+fairly general functions, with which we can implement (almost) everything
+else.
+
+$Foldl$ and $Foldr$ both take in functions and apply them recursively
+to a list.  $Foldl$ starts at the left of the list, and $Foldr$
+starts at the right.  For example,
+\begin{eqnarray*}
+   Foldl~f~e~[1,2,3]  &  =  &  f~(f~(f~e~1)~2)~3  \\
+   Foldr~f~e~[1,2,3]  &  =  &  f~1~(f~2~(f~3~e))
+\end{eqnarray*}
+These functions will be used a lot later on.  $Foldl$ can be defined:
+\begin{eqnarray*}
+      Foldl~f~e~xs  &  =  &  xs~(Foldl'~f~e)~e  \\
+   Foldl'~f~e~x~xs  &  =  &  Foldl~f~(f~e~x)~xs
+\end{eqnarray*}
+So $Foldl~f~e~\nil$ is
+\begin{eqnarray*}
+   \start{Foldl~f~e~Nil}  
+   &  =  &  Nil~(Foldl'~f~e)~e  \\
+   &  =  &  \Foldl{f}{e}\Nil
+\end{eqnarray*}
+And $Foldl~f~e~(x:xs)$ is
+\begin{eqnarray*}
+   \start{Foldl~f~e~(Cons~x~xs)}  
+   &  =  &  Cons~x~xs~(Foldl'~f~e)~e  \\
+   &  =  &  Foldl'~f~e~x~xs  \\
+   &  =  &  Foldl~f~(f~e~x)~xs
+\end{eqnarray*}
+For example, $Foldl~f~e~[1,2,3]$ is
+\begin{eqnarray*}
+   \start{Foldl~f~e~[1,2,3]}  
+   &  =  &  Foldl~f~(f~e~1)~[2,3]  \\
+   &  =  &  Foldl~f~(f~(f~e~1)~2)~[3]  \\
+   &  =  &  Foldl~f~(f~(f~(f~e~1)~2)~3)~\nil  \\
+   &  =  &  f~(f~(f~e~1)~2)~3
+\end{eqnarray*}
+as promised.  Similarly, we can define $Foldr$ as
+\begin{eqnarray*}
+      Foldr~f~e~xs  &  =  &  xs~(Foldr'~f~e)~e  \\
+   Foldr'~f~e~x~xs  &  =  &  f~x~(Foldr~f~e~xs)
+\end{eqnarray*}
+For $Foldr~f$ to respect equality, $f~x$ should respect equality.
+
+When we do the unfolding, we discover that
+\begin{eqnarray*}
+       Foldr~f~e~\nil  &  =  &  e  \\
+   Foldr~f~e~(x:xs)  &  =  &  f~e~(Foldr~f~e~xs)
+\end{eqnarray*}
+$Foldr$ tends to be more efficient than $Foldl$, because $Foldl$
+has to run along the entire list before it can start applying $f$,
+whereas $Foldr$ can apply $f$ straight away.  If $f$ is a lazy function,
+this can make quite a difference.  $Foldl$ on infinite lists, anyone?
+\begin{TeXcode}
+\def\Foldl#1#2#3%
+   {#3{\Foldl@{#1}{#2}}{#2}}
+\def\Foldl@#1#2#3#4%
+   {\Foldl{#1}{#1{#2}{#3}}{#4}}
+\def\Foldr#1#2#3%
+   {#3{\Foldr@{#1}{#2}}{#2}}
+\def\Foldr@#1#2#3#4%
+   {#1{#3}{\Foldr{#1}{#2}{#4}}}
+\end{TeXcode}
+
+\subsection{Cat}
+
+Given two lists, we would like to be able to stick them together,
+which is what $Cat$ (short for ``concatenate'')
+does.  For example, $Cat~[1,2]~[3,4]$ is
+$[1,2,3,4]$.  It can be defined using $Foldr$:
+\begin{eqnarray*}
+   Cat~xs~ys  &  =  &  Foldr~Cons~ys~xs
+\end{eqnarray*}
+So
+\begin{eqnarray*}
+   \start{Cat~[1,2]~[3,4]}  
+   &  =  &  Foldr~Cons~[3,4]~[1,2]  \\
+   &  =  &  Cons~1~(Foldr~Cons~[3,4]~[2])  \\
+   &  =  &  Cons~1~(Cons~2~(Foldr~Cons~[3,4]~\nil))  \\
+   &  =  &  Cons~1~(Cons~2~[3,4])  \\
+   &  =  &  \Unlistize{\Cat{\Listize[1,2]}{\Listize[3,4]}}
+\end{eqnarray*}
+The \TeX\ code for \verb|\Cat| is suspiciously similar to its mathematical
+definition.
+\begin{TeXcode}
+\def\Cat#1#2{\Foldr\Cons{#2}{#1}}
+\end{TeXcode}
+
+\subsection{Reverse}
+
+We can reverse any list with the function $Reverse$, defined using
+$Foldl$:
+\begin{eqnarray*}
+   Reverse  &  =  &  Foldl~(Twiddle~Cons)~Nil
+\end{eqnarray*}
+For example, $Reverse~[1,2,3]$ can be calculated:
+\begin{eqnarray*}
+   \start{Reverse~[1,2,3]}  
+   &  =  &  Foldl~(Twiddle~Cons)~Nil~[1,2,3]  \\
+   &  =  &  Twiddle~Cons  \\
+   &     &  \quad (Twiddle~Cons~(Twiddle~Cons~Nil~1)~2)~3  \\
+   &  =  &  Cons~3~(Cons~2~(Cons~1~Nil))  \\
+   &  =  &  \Show\Reverse[1,2,3]
+\end{eqnarray*}
+The \TeX\ code for \verb|\Reverse| doesn't even take in any parameters.
+\begin{TeXcode}
+\def\Reverse{\Foldl{\Twiddle\Cons}\Nil}
+\end{TeXcode}
+
+\subsection{All, Some and Isempty}
+
+Given a predicate $p$, we can find out if all the elements of
+a list satisfy $p$ with $All~p$.  Similarly we can find if something
+in the list satisfies $p$ with $Some~p$.  For example,
+\begin{eqnarray*}
+   All~(Lessthan~1)~[1,2,3]  
+   &  =  &  \All{\Lessthan 1}{\Listize[1,2,3]}{True}{False}  \\
+   Some~(Lessthan~1)~[1,2,3]  
+   &  =  &  \Some{\Lessthan 1}{\Listize[1,2,3]}{True}{False}
+\end{eqnarray*}
+These can be defined
+\begin{eqnarray*}
+    All~p  &  =  &  Foldr~(Compose~And~p)~True  \\
+   Some~p  &  =  &  Foldr~(Compose~Or~p)~False
+\end{eqnarray*}
+For example, $Isempty$ can be defined
+\begin{eqnarray*}
+   Isempty  &  =  &  All~(First~False)
+\end{eqnarray*}
+This is probably not the most efficient check in the world, but we
+hardly ever need it --- $Foldl$ or $Foldr$ will normally do the job.
+\begin{TeXcode}
+\def\All#1{\Foldr{\Compose\And{#1}}\True}
+\def\Some#1{\Foldr{\Compose\Or{#1}}\False}
+\def\Isempty{\All{\First\False}}
+\end{TeXcode}
+
+\subsection{Filter}
+
+$Filter$ takes a predicate $p$ and a list $xs$, and returns a list
+containing only those elements of $xs$ that satisfy $p$.  For example,
+\begin{eqnarray*}
+   Filter~(Lessthan~1)~[1,2,3]  &  =  &  \Show\Filter{\Lessthan 1}[1,2,3]
+\end{eqnarray*}
+$Filter$ can be defined as a $Foldr$:
+\begin{eqnarray*}
+   Filter~p  &  =  &  Foldr~(Lift~p~Cons~Second)~Nil
+\end{eqnarray*}
+Another easy bit of \TeX:
+\begin{TeXcode}
+\def\Filter#1%
+   {\Foldr{\Lift{#1}\Cons\Second}\Nil}
+\end{TeXcode}
+
+\subsection{Map}
+
+$Map$ takes a function $f$ and a list $xs$ and applies $f$ to every
+element of $xs$.  For example,
+\begin{eqnarray*}
+   Map~f~[1,2,3]  &  =  &  \Show\Map{f~}[1,2,3]
+\end{eqnarray*}
+This is another job for $Foldr$.
+\begin{eqnarray*}
+   Map~f  &  =  &  Foldr~(Compose~Cons~f)~Nil
+\end{eqnarray*}
+We shall see $Map$ used later on, to convert from a list of
+names such as \Show\Map{\Compose\mbox\tt}[Fac-yawn,Fac-cows], to a list of 
+labels such as \By[Fac-yawn,Fac-cows].
+\begin{TeXcode}
+\def\Map#1{\Foldr{\Compose\Cons{#1}}\Nil}
+\end{TeXcode}
+
+\subsection{Insert}
+
+The only function we need which isn't easily defined as a reduction
+is $Insert$, which inserts an element into a sorted list.  For example,
+\begin{eqnarray*}
+   Insert~Lessthan~3~[1,2,4,5]  &  =  &  \Show\Insert\Lessthan3[1,2,4,5]
+\end{eqnarray*}
+$Insert$ takes in an ordering as its first parameter, so we're not stuck
+with one particular order.  It is defined directly in terms of the 
+definition of lists.
+\begin{eqnarray*}
+      Insert~o~x~xs  &  =  &  xs~(Insert'~o~x)~(Singleton~x)  \\
+   Insert'~o~x~y~ys  &  =  &  o~x~y  \\
+                     &     &  \quad  (Cons~x~(Cons~y~ys))  \\
+                     &     &  \quad  (Cons~y~(Insert~o~x~ys))
+\end{eqnarray*}
+We can then define the function all this has been leading up to,
+$Insertsort$ which takes an ordering and a list, and insert-sorts the
+list according to the ordering.  For example,
+\begin{eqnarray*}
+   Insertsort~Lessthan~[2,3,1,2]  &  =  &  \Show\Insertsort\Lessthan[2,3,1,2]
+\end{eqnarray*}
+We can implement this as a fold:
+\begin{eqnarray*}
+   Insertsort~o  &  =  &  Foldr~(Insert~o)~Nil
+\end{eqnarray*}
+And so we've got sorted lists.
+\begin{TeXcode}
+\def\Insert#1#2#3%
+   {#3{\Insert@{#1}{#2}}{\Singleton{#2}}}
+\def\Insert@#1#2#3#4%
+   {#1{#2}{#3}%
+      {\Cons{#2}{\Cons{#3}{#4}}}%
+      {\Cons{#3}{\Insert{#1}{#2}{#4}}}}
+\def\Insertsort#1{\Foldr{\Insert{#1}}\Nil}
+\end{TeXcode}
+Interestingly, as we have implemented unbounded lists in \TeX's mouth,
+this means we can implement a Turing Machine.  So, if you believe
+the Church-Turing thesis, \TeX's mouth is as powerful as any
+computer anywhere.  Isn't that good to know?
+
+\section{Sorting reference lists}
+\label{thissection}
+
+So, these are the macros I've got to play with --- how do we apply them to
+sorting lists of references?  Well, I'm using \LaTeX, which keeps the
+current reference in a macro called \verb|\@currentlabel|, which 
+is~\ref{thissection} at the moment, as this is Section~\ref{thissection}.
+So I just need to store the value of \verb|\@currentlabel| somehow.
+
+Fortunately, I'm only ever going to be making references to facts
+earlier on in the document, in order to make sure I'm not proving
+any results in terms of themselves.  So I don't need to play around
+with auxiliary files, and can just do everything in terms of
+macros.
+
+\subsection{Number and Label}
+
+Each label in the document is given a unique number, in the order
+the labels were put down.  So the number of \verb|Fac-cows| 
+is \verb|\Number{Fac-cows}|, which expands out to~\Number{Fac-cows},
+the number of \verb|Fac-people| is~\Number{Fac-people}, and so on.
+
+Each number has an associated label with it.  For example,
+the first label is \verb|\Label{1}|, which is~\Label{1},
+the second label is~\Label{2} and so on.  So to find the label for
+\verb|Fac-cows|, we say \verb|\Label{\Number{Fac-cows}}| which expands 
+out to~\Label{\Number{Fac-cows}}.
+
+These numbers and labels are kept track of in macros.  For example,
+the number of \verb|Fac-cows| is kept in \cstok{Number-Fac-cows}.
+Similarly, the first label is kept in \cstok{Label-1}.
+As these macros have dashes in their names, they aren't likely to
+be used already.
+
+So the \TeX\ code for \verb|\Number| and \verb|\Label| is pretty
+simple.
+\begin{verbatim}
+\def\Number#1{\csname Number-#1\endcsname}
+\def\Label#1{\csname Label-#1\endcsname}
+\end{verbatim}
+
+\subsection{Lastnum and Forward}
+
+The number of the most recent label is kept in \verb|\Lastnum|.
+\begin{verbatim}
+\newcount\Lastnum
+\end{verbatim}
+To put down a label \verb|Foo|, I type \verb|\Forward{Foo}|.
+\Forward{Foo}
+This increments the counter
+\verb|\Lastnum|, and \verb|\xdef|s \cstok{Number-Foo}
+to be the value of
+\verb|\Lastnum|, which is now~\the\Lastnum.  So
+\verb|\Number{Foo}| now expands to~\Number{Foo}.
+Similarly, it \verb|\xdef|s \cstok{Label-\Number{Foo}} to be
+\verb|\@currentlabel|, which is currently~\Label{\Number{Foo}}.
+So \verb|\Label{\Number{Foo}}| now expands to~\Label{\Number{Foo}}.
+\begin{verbatim}
+\def\Forward#1%
+   {\global\advance\Lastnum by 1
+    \csnameafter\xdef{Number-#1}%
+       {\the\Lastnum}%
+    \csnameafter\xdef{Label-\the\Lastnum}%
+       {\@currentlabel}}
+\end{verbatim}
+This uses \verb|\csnameafter\foo{bar}|, which expands out to
+\verb|\foo\bar|.
+\begin{verbatim}
+\def\csnameafter#1#2%
+   {\expandafter#1\csname#2\endcsname}
+\end{verbatim}
+
+\subsection{Listize, Unlistize and Show}
+
+At the moment, lists have to be built up using \verb|\Cons| and 
+\verb|\Nil|, which is rather annoying.  Similarly, we can't actually
+do anything with a list once we've built it.  We'd like some way
+of converting lists in the form \verb|[a,b,c]| to and from the
+form $[a,b,c]$.  This is done with \verb|\Listize| and \verb|\Unlistize|.
+So \verb|\Listize[a,b,c]| expands to 
+\begin{verbatim}
+\Cons{a}{\Cons{b}{\Cons{c}{\Nil}}}
+\end{verbatim}
+Similarly, \verb|\Unlistize| takes the list $[a,b,c]$ and expands out
+to \verb|[a, b, c]|.  \verb|\Unlistize| is done with a $Foldr$.
+\begin{TeXcode}
+\def\Unlistize#1{[#1\Unlistize@{}]}
+\def\Unlistize@#1{#1\Foldr\Commaize{}}
+\def\Commaize#1#2{, #1#2}
+\end{TeXcode}
+The macro \verb|\Listize| is just a \TeX\ hack with pattern matching.
+It would have been nice to use \verb|\@ifnextchar| for this, but
+that uses \verb|\futurelet|, which doesn't expand in the mouth.  Oh well.
+\begin{TeXcode}
+\def\Listize[#1]%
+   {\Listize@[#1,\relax]}
+\def\Listize@#1,#2]%
+   {\TeXif{\ifx\relax#2}%
+        {\Singleton{#1}}%
+        {\Cons{#1}{\Listize@#2]}}
+\end{TeXcode}
+This only works for nonempty lists --- \verb|\Listize[]| produces the
+singleton list \verb|\Singleton{}|.  It also uses \verb|\relax| as its
+end-of-list character, so lists with \verb|\relax| in them have to
+be done by hand.  You can't win them all.  So 
+\begin{verbatim}
+$\Unlistize{\Listize[a,b,c]}$
+\end{verbatim}
+produces 
+$\Unlistize{\Listize[a,b,c]}$.  This is such a common construction
+that I've defined a macro \verb|\Show| such that
+\verb|\Show\foo[a,b,c]| expands out to
+\begin{verbatim}
+\Unlistize{\foo{\Listize[a,b,c]}}
+\end{verbatim}
+For example, the equation
+\begin{eqnarray*}
+   Filter\,(Lessthan\,1)\,[1,2,3]  
+      &=& \Show\Filter{\Lessthan 1}[1,2,3]
+\end{eqnarray*}
+was generated with
+\begin{verbatim}
+\begin{eqnarray*}
+   Filter\,(Lessthan\,1)\,[1,2,3]  
+      &=& \Show\Filter{\Lessthan 1}[1,2,3]
+\end{eqnarray*}
+\end{verbatim}
+Many of the examples in this article were typeset this way.
+\begin{TeXcode}
+\def\Show#1[#2]%
+   {\Unlistize{#1{\Listize[#2]}}}
+\end{TeXcode}
+
+\subsection{By}
+
+Given these macros, we can now sort any list of references with $Bylist$,
+defined
+\begin{eqnarray*}
+   Bylist~xs  &  =  &  Map~Label  \\
+              &     &  \quad (Insertsort~Lessthan \\
+              &     &  \quad\quad (Map~Number~xs))
+\end{eqnarray*}
+This takes in a list of label names like \verb|Fac-yawn|,
+converts it into a list of numbers with $Map~Number$,
+sorts the resulting list with $Insertsort~Lessthan$,
+and finally converts all the numbers into labels like 
+\Label{\Number{Fac-yawn}} with $Map~Label$.  For example,
+\begin{eqnarray*}
+   \start{Bylist~\Show\Map{\Compose\mbox\tt}[Fac-yawn,Fac-cows]}
+   &  =  &  Map~Label~(Insertsort~Lessthan \\
+   &     &  \quad (Map~Number~
+               \Show\Map{\Compose\mbox\tt}[Fac-yawn,Fac-cows]))  \\
+   &  =  &  Map~Label~(Insertsort~Lessthan~
+               \Show\Map\Number[Fac-yawn,Fac-cows]) \\
+   &  =  &  Map~Label~\Show\Compose{\Insertsort\Lessthan}{\Map\Number}
+               [Fac-yawn,Fac-cows]  \\
+   &  =  &  \Show\Bylist[Fac-yawn,Fac-cows]
+\end{eqnarray*}
+The \TeX\ code for this is
+\begin{verbatim}
+\def\Bylist#1%
+   {\Map\Label
+      {\Insertsort\Lessthan
+         {\Map\Number{#1}}}}
+\end{verbatim}
+So we can now stick all this together, and define the macro \verb|\By|
+that prints out lists of references.  It is
+\begin{verbatim}
+\def\By{\Show\Bylist}
+\end{verbatim}
+So \verb|\By[Fac-yawn,Fac-cows]| is~\By[Fac-yawn,Fac-cows].
+Which is quite nice.
+
+\section{Other applications}
+\label{outputroutines}
+
+Is all this worth it?  Well, I've managed to get my lists of facts in
+order, but that's not the world's most astonishing application.
+There are other things that these lists are useful for, though.
+
+For example, Damian Cugley has a macro package under development for
+laying out magazines.  {\sc Mag}\TeX's output routine needs to be quite
+smart, as magazines often have gaps where illustrations or photographs
+are going to live.  In general, each block of text needs to be output
+in a different fashion from every other block of text.
+This will be handled by keeping an infinite list of output
+routines.  Each time a box is cut off the scroll to be output,
+the head of the list is chopped off and is used as the output routine
+for that box.  That way, quite complex page shapes can be built up.
+
+Mainly, though, these macros were written just as a challenge.
+I learned quite a lot about \TeX\ and needed some \TeX niques I'd
+never seen before.  It was also quite pleasing to see that \TeX\ code
+can be formally verified, albeit in a rather noddy way.  Without
+some sort of abstract view of lists, these \TeX\ macros could
+not have been written.
+
+\section{Acknowledgements}
+
+Thanks to Jeremy Gibbons for letting me bounce ideas off him
+and spotting the duff ones,
+to Damian Cugley for saying ``Do you really think \TeX\ is meant
+to do this?'', and to the Problem Solving Club for hearing me out.
+This work was sponsored by the Science and Engineering
+Research Council and Hewlett Packard.
+
+\makesignature
+
+\end{document}
+

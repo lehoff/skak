@@ -1,0 +1,324 @@
+\documentclass[10pt,a4paper,twocolumn,landscape]{article}
+
+%\usepackage{a4wide}
+\usepackage[dvips]{geometry}
+
+\usepackage{titlesec}
+\titleformat{\section}
+  {\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}
+  {\sffamily\normalsize\bfseries}{}{0em}{}
+
+\titlespacing*{\section}{0pt}{1.5ex plus 0.5ex minus .2ex}{1ex plus
+  .2ex}
+% \titlespacing*{\subsection}{0pt}{2.5ex plus 0.75ex minus .2ex}{1ex
+%   plus .2ex}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+\chead{\textbf{\texttt{skak} version 1.2 \textsf{Reference Manual}}}
+
+
+\usepackage[ps]{skak}
+
+\newcommand{\Cmd}[1]{\textsf{\textbf{\textbackslash#1}}}
+\newcommand{\Arg}[1]{\textsf{\textsl{#1}}}
+
+\newcommand{\Option}[2]{\textsf{\textbf{#1}}\ #2\smallskip}
+
+\newcommand{\ArgInDescription}[1]{\Arg{\{#1\}}}
+
+\newcommand{\command}[3]{\Cmd{#1}\Apply{\ArgInDescription}{\Listize[#2]}\newline#3\smallskip}
+
+\newcommand{\simpleCommand}[2]{\Cmd{#1}\newline#2\smallskip}
+
+\setlength{\parindent}{0pt}
+
+\newcommand{\myheading}[1]{{\large{\textsf{\textbf{#1}}}}\bigskip}
+
+\begin{document}
+%\tracingmacros=0
+
+%\twocolumn
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Updating the board}
+%\myheading{Updating the board}
+
+% These commands are used to update the position on the
+% board. \Cmd{mainline} is the heart of the \texttt{skak} package.
+
+
+
+\simpleCommand{newgame}
+{Initialises the board to the opening position.}
+
+\command{mainline}{SAN moves}
+{Updates the board with the \Arg{SAN moves} and
+typesets \Arg{SAN moves} according to the current \Cmd{mainlinestyle}.}
+
+\command{hidemoves}{SAN moves}
+{Updates the board with the \Arg{SAN moves} but does
+  \emph{not} typeset the moves --- this is useful for commenting a
+  game where you want to focus on a certain position after
+  some moves have already been made.}
+
+\def\tmpCmd#1{\Arg{\textless row#1\textgreater/}} 
+\command{fenboard}{FEN position}
+{Initialises the board to the position described with \Arg{FEN
+    position}. The format of a FEN position is:\newline
+  \Arg{\textless board rows\textgreater} \Arg{w\textbar
+  b} \Arg{\textless castling options\textgreater} \Arg{\textless en
+  passant square\textgreater}\newline \Arg{\textless 50 moves
+  counter\textgreater} \Arg{\textless move number\textgreater}\newline
+The FEN for the opening position is\newline 
+\Arg{rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR}\newline
+\Arg{w KQkq - 0 1}\newline
+Note: the 50 moves counter is not used by the \texttt{skak} game
+engine, but it is updated to stay in sync with external programs.}
+
+% \simpleCommand{boardasfen}
+% {Returns the current position in the FEN notation.}
+
+%\newpage
+
+
+
+%\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Describing moves}
+\bigskip
+
+
+% Apart from showing the moves that update the board it is also
+% possible to describe moves in the running text.  
+
+\command{variation}{SAN moves}
+{This will typeset \Arg{SAN moves} using the current \Cmd{variationstyle}. This command undoes the last move so you have to start one ply back.}
+
+\command{variationcurrentt}{SAN moves}
+{Like \Cmd{variation}, but does not undo the last move.}
+
+\command{continuevariation}{SAN moves}
+{Continues the variation but undoes the last move first.}
+
+\command{continuevariationcurrent}{SAN moves}
+{Continues the variation without undoing the last move first.}
+
+\command{wmove}{SAN move}
+{Typesets \Arg{SAN move} using the current \Cmd{variationstyle}.
+Example: \texttt{\textbackslash wmove\{Nf3\}} gives \wmove{Nf3}.}
+
+\command{bmove}{SAN move}
+{Typesets \Arg{SAN move} using the current \Cmd{variationstyle} but
+  with \ldots (or something similar according to the style) in front
+  of the move --- can be used to describe a single black move. Example:
+ \texttt{\textbackslash bmove\{Nxd4\}} gives \bmove{Nxd4}}
+
+\command{movecomment}{Chess moves}
+{Typesets the \Arg{Chess moves} using the current \Cmd{variationstyle},
+but doesn't check for move numbers like \Cmd{variation} does.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Showing the board}
+
+
+
+\simpleCommand{showboard}
+{Shows the current position from whites perspective.}
+
+\simpleCommand{showinverseboard}
+{Shows the current position from blacks perspective.}
+
+
+
+\section{Style selection}
+
+\simpleCommand{styleA}
+{Chooses the \Arg{styleA} for typesetting of moves.}
+
+\simpleCommand{styleB}
+{Chooses the \Arg{styleB} for typesetting of moves. This is the
+  default style.}
+
+\simpleCommand{styleC}
+{Chooses the \Arg{styleC} for typesetting of moves.}
+
+
+%\newpage
+
+
+\section{Size of the board}
+
+
+
+\simpleCommand{normalboard}
+{The default size of the board typeset by the \Cmd{showboard}
+  commands.}
+
+\newcommand{\boardsize}[1]{
+\simpleCommand{#1board}
+{The \Cmd{showboard} commands will be typeset in a #1 font.}}
+
+\boardsize{tiny}
+
+\boardsize{small}
+
+\boardsize{large}
+
+%\newpage
+\section{Notation and mover}
+
+\simpleCommand{notationOn}
+{The \Cmd{showboard} commands show rank and file names. This is the
+  default.}
+
+\simpleCommand{notationOff}
+{The \Cmd{showboard} commands show only the board.}
+
+\simpleCommand{showmoverOn}
+{The \Cmd{showboard} commands indicate --- with a small box --- which
+  player has to move. Note: this only works when the ps option is used.}
+
+\simpleCommand{showmoverOff}
+{The dual of \Cmd{showmoverOn}.}
+
+
+
+\section{Selective showing of pieces}
+
+\simpleCommand{showall}
+{Makes the \Cmd{showboard} commands show all pieces.}
+
+\simpleCommand{showonlywhite}
+{The \Cmd{showboard} commands will only show the white pieces.}
+
+\simpleCommand{showonlyblack}
+{The \Cmd{showboard} commands will only show the black pieces.}
+
+\simpleCommand{showonlypawns}
+{The \Cmd{showboard} commands will only show the pawns.}
+
+\command{showonly}{piece names}
+{The argument \Arg{piece names} is a comma separated list of names of
+  pieces to be shown using the \Cmd{showboard} commands. White pieces
+  are named \Arg{K,Q,R,B,N,P} and black's \Arg{k,q,r,b,n,p}. Note: called with no arguments all pieces are showed!}
+
+\command{showallbut}{piece names}
+{The argument \Arg{piece names} is a comma separated list of names of
+  pieces which will \emph{not} be shown when using the \Cmd{showboard}
+  commands. Note: called with an empty list no pieces are shown!}
+
+
+%\newpage
+\section{Move arrows}
+
+\command{printarrow}{from,to} 
+{Draws an arrow on the last typeset
+  board from the square \Arg{from} to the square \Arg{to}.}
+
+\Cmd{highlight}\Arg{[ms]}\Arg{\{square list\}}\newline
+The comma separated \Arg{square list} will by default be highlighted using a
+  thick frame on the last
+  typeset board. The optional marker symbol
+\Arg{ms} can be one of X, x, O and o in
+  which case a cross or a circle is used to highlight the square.
+
+\command{printknightmove}{from,to}
+{Draws a bent arrow from the square \Arg{from} to the square \Arg{to}.}
+
+%\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Customizations}
+
+\command{newskaklanguage}{language,piecenames}
+{Defines a new \Arg{language} for the input of SAN
+  moves. \Arg{piecenames} are the uppercase letters used for the
+  pieces in the order King, Queen, Rook, Bishop, Knight,
+  Pawn. Example: 
+\mbox{\texttt{\textbackslash newskaklanguage\{danish\}\{KDTLSB\}}}
+defines  \Arg{danish} as a new input language.}
+
+\Cmd{skaklanguage}\Arg{[language]}\newline
+Chooses \Arg{language} as new input language --- defaults to \Arg{english}.
+
+\smallskip
+
+\simpleCommand{mainlinestyle}
+{Activates the typesetting style for the mainline --- this command can
+  be redefined if special requirements for the typesetting exists.}
+
+\simpleCommand{variationstyle}
+{Similar to \Cmd{mainlinestyle} just for the typesetting of variations.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Game storage}
+
+
+\command{savegame}{file name}
+{Writes the FEN string for the current position on the board to the
+  file \texttt{\textless file name\textgreater.fen}}
+
+\command{loadgame}{file name} {Load the position stored in the file
+  \texttt{\textless file name\textgreater.fen}}
+
+\command{storegame}{name}
+{Stores the current game position using \Arg{name} as reference.}
+
+\command{restoregame}{name}
+{Restores the game previously saved using \Cmd{storegame}.} 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Package options}
+
+\Option{ps}{Includes the \texttt{ps-tricks} package in order to make
+  ornaments on the board. Required to make the following commands
+  work: \Cmd{showmoverOn}, \Cmd{printarrow}, \Cmd{highlight},
+  \Cmd{printknightmove}.}
+
+\Option{psoff}{Does \emph{not} include the \texttt{ps-tricks} package.}
+
+\Option{mover}{Issues the \Cmd{showmoveOn} command.}
+
+\Option{moveroff}{Issues the \Cmd{showmoveOn} command.}
+
+\Option{notation}{Issues the \Cmd{notationOn} command.}
+
+\Option{english}{Makes english the preferred input language --- the
+  only defined language at the moment.}
+
+\Option{styleA}{Chooses \Cmd{styleA} style for the typesetting of
+  moves.}
+
+\Option{styleB}{Chooses \Cmd{styleB} style for the typesetting of
+  moves.}
+
+\Option{styleC}{Chooses \Cmd{styleC} style for the typesetting of
+  moves.}
+
+\newcommand{\sizeoption}[1]{\Option{#1}{The board is shown using the
+    #1 size font.}}
+
+\sizeoption{tiny}
+
+\sizeoption{small}
+
+\sizeoption{normal}
+
+\sizeoption{large}
+
+\bigskip
+
+The default options are \textsf{\textbf{notation, normal, psoff,
+    english, moveroff, styleB}}.
+
+\end{document}
+
+
+
+
+
+

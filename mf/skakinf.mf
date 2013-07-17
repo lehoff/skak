@@ -1,0 +1,739 @@
+
+% First, the markers (cross and circle) are defined for usage
+% in the normal text.
+
+beginchar("x", d#, .8d#, .2d#);
+  "x: Cross marker";
+
+  pickup pencircle scaled thick;
+  define_whole_pixels(d);
+
+  % lower left point
+  z1=(.2d,0);
+  % upper left point
+  z2=(.2d,.6d);
+  % lower right point
+  z3=(.8d,0);
+  % upper right point
+  z4=(.8d,.6d);
+
+  draw z1..z4;
+  draw z2..z3;
+endchar;
+
+beginchar("y", d#, .8d#, .2d#);
+  "y: Circle marker";
+
+  pickup pencircle scaled thick;
+  define_whole_pixels(d);
+
+  draw fullcircle scaled .6d shifted (.5d,.3d);
+endchar;
+
+% Additionally, a "plus" and "minus" sign and the
+% ``capture'' symbol are provided
+
+beginchar("+", .7d#, d#, 0);
+  "+: Plus";
+
+  pickup pencircle scaled middle;
+  define_whole_pixels(d);
+
+  % Plus sign
+  z1=(.1d,.25d);
+  z2=(.6d,.25d);
+  z3=(.35d,.5d);
+  z4=(.35d,0);
+
+  draw z1--z2;
+  draw z3--z4;
+endchar;
+
+beginchar("-", .4d#, d#, 0);
+  "-: Minus";
+
+  pickup pencircle scaled middle;
+  define_whole_pixels(d);
+
+  % Minus sign
+  z1=(.1d,.3d);
+  z2=(.3d,.3d);
+
+  draw z1--z2;
+endchar;
+
+beginchar("X", .6d#, d#, 0);
+  "X: Capture symbol";
+
+  pickup pencircle scaled middle;
+  define_whole_pixels(d);
+
+  % lower left point
+  z1=(.1d,.5middle);
+  % upper left point
+  z2=(.1d,.4d+.5middle);
+  % lower right point
+  z3=(.5d,.5middle);
+  % upper right point
+  z4=(.5d,.4d+.5middle);
+
+  draw z1..z4;
+  draw z2..z3;
+endchar;
+
+% Here, the definitions of the informator symbols start
+
+beginchar("a", d#, d#, 0);
+  "a: Informator symbol ``pair of bishops''";
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Points for lower square
+  z1=(.1d,.5d);
+  z2=(.1d,0);
+  z3=(.6d,.5d);
+  z4=(.6d,0);
+
+  % Points for upper square
+  z5=(.4d,.8d);
+  z6=(.4d,.3d);
+  z7=(.9d,.8d);
+  z8=(.9d,.3d);
+
+  draw z1--z2--z4--z3--z1;
+  draw z5--z6--z8--z7--z5;
+endchar;
+
+beginchar("b", 1.2d#, d#, 0);
+  "b: Informator symbol ``better is''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Points for vertical line
+  z1=(.1d,0);
+  z2=(1.1d,0);
+
+  draw z1..z2;
+  draw halfcircle scaled d shifted (.6d,0);
+endchar;
+
+beginchar("c", .7d#, d#, 0);
+  "c: Informator symbol ``white has the upper hand''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Minus sign
+  z1=(.1d,.2d);
+  z2=(.6d,.2d);
+  % Plus sign
+  z3=(.1d,.55d);
+  z4=(.6d,.55d);
+  z5=(.35d,.8d);
+  z6=(.35d,.3d);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw z5--z6;
+endchar;
+
+beginchar("d", .9d#, d#, 0);
+  "d: Informator symbol ``double pawns''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  draw fullcircle scaled .35d shifted (.45d,.125d);
+  draw fullcircle scaled .35d shifted (.45d,.625d);
+endchar;
+
+beginchar("e", .7d#, d#, 0);
+  "e: Informator symbol ``black has the upper hand''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Minus sign
+  z1=(.1d,.6d);
+  z2=(.6d,.6d);
+  % Plus sign
+  z3=(.1d,.25d);
+  z4=(.6d,.25d);
+  z5=(.35d,.5d);
+  z6=(.35d,0);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw z5--z6;
+endchar;
+
+beginchar("f", .7d#, d#, 0);
+  "f: Informator symbol ``white stands slightly better''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Equal sign
+  z1=(.1d,.2d);
+  z2=(.6d,.2d);
+  z3=(.1d,.1d);
+  z4=(.6d,.1d);
+  % Plus sign
+  z5=(.1d,.55d);
+  z6=(.6d,.55d);
+  z7=(.35d,.8d);
+  z8=(.35d,.3d);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw z5--z6;
+  draw z7--z8;
+endchar;
+
+beginchar("g", .7d#, d#, 0);
+  "g: Informator symbol ``black stands slightly better''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Equal sign
+  z1=(.1d,.6d);
+  z2=(.6d,.6d);
+  z3=(.1d,.7d);
+  z4=(.6d,.7d);
+  % Plus sign
+  z5=(.1d,.25d);
+  z6=(.6d,.25d);
+  z7=(.35d,.5d);
+  z8=(.35d,0);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw z5--z6;
+  draw z7--z8;
+endchar;
+
+beginchar("h", 1.3d#, d#, 0);
+  "h: Informator symbol ``white has a decisive advantage''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Plus sign
+  z1=(.1d,.25d);
+  z2=(.6d,.25d);
+  z3=(.35d,.5d);
+  z4=(.35d,0);
+  % Minus sign
+  z5=(.7d,.25d);
+  z6=(1.2d,.25d);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw z5--z6;
+endchar;
+
+beginchar("i", 1.3d#, d#, 0);
+  "i: Informator symbol ``black has a decisive advantage''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Minus sign
+  z1=(.1d,.25d);
+  z2=(.6d,.25d);
+  % Plus sign
+  z3=(.7d,.25d);
+  z4=(1.2d,.25d);
+  z5=(.95d,.5d);
+  z6=(.95d,0);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw z5--z6;
+endchar;
+
+beginchar("j", .7d#, d#, 0);
+  "j: Informator symbol ``even''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,.4d);
+  z2=(.6d,.4d);
+  z3=(.1d,.3d);
+  z4=(.6d,.3d);
+  draw z1--z2;
+  draw z3--z4;
+endchar;
+
+beginchar("k", .7d#, d#, 0);
+  "k: Informator symbol ``unclear''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,.35d);
+  z2=(.2d,.475d);
+  z3=(.35d,.35d);
+  z4=(.5d,.225d);
+  z5=(.6d,.35d);
+  z6=(.5d,.475d);
+  z7=(.2d,.225d);
+
+  draw z1..z2..z3..z4..z5..z6..z3..z7..cycle;
+endchar;
+
+beginchar("l", d#, d#, 0);
+  "l: Informator symbol ``see''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,.35d);
+  z2=(.9d,.35d);
+  draw z1--z2;
+endchar;
+
+beginchar("m", .9d#, d#, 0);
+  "m: Informator symbol ``mate''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Points for vertical lines
+  z1=(.1d,.5d);
+  z2=(.1d,.2d);
+  z3=(.8d,.5d);
+  z4=(.8d,.2d);
+
+  % Points for horizontal lines
+  z5=(.3d,.7d);
+  z6=(.6d,.7d);
+  z7=(.3d,0);
+  z8=(.6d,0);
+
+  draw z1..z3;
+  draw z2..z4;
+  draw z5..z7;
+  draw z6..z8;
+endchar;
+
+beginchar("n", .7d#, d#, 0);
+  "n: Informator symbol ``with compensation for the material''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Infinity symbol
+  z1=(.1d,.25d);
+  z2=(.2d,.375d);
+  z3=(.35d,.25d);
+  z4=(.5d,.125d);
+  z5=(.6d,.25d);
+  z6=(.5d,.375d);
+  z7=(.2d,.125d);
+  % Equal sign
+  z8=(.1d,.575d);
+  z9=(.6d,.575d);
+  z10=(.1d,.475d);
+  z11=(.6d,.475d);
+
+  draw z1..z2..z3..z4..z5..z6..z3..z7..cycle;
+  draw z8--z9;
+  draw z10--z11;
+endchar;
+
+beginchar("o", d#, d#, 0);
+  "o: Informator symbol ``bishops of opposite color''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Points for lower square
+  z1=(.1d,.5d);
+  z2=(.1d,0);
+  z3=(.6d,.5d);
+  z4=(.6d,0);
+
+  % Points for upper square
+  z5=(.4d,.8d);
+  z6=(.4d,.3d);
+  z7=(.9d,.8d);
+  z8=(.9d,.3d);
+
+  draw z1--z2--z4--z3--z1;
+  fill z5--z6--z8--z7--cycle;
+endchar;
+
+beginchar("q", 1.25d#, d#, 0);
+  "q: Informator symbol ``separated pawns''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  draw fullcircle scaled .35d shifted (.275d,.4d);
+  fill fullcircle scaled .1d shifted (.55d,.4d);
+  fill fullcircle scaled .1d shifted (.7d,.4d);
+  draw fullcircle scaled .35d shifted (.975d,.4d);
+endchar;
+
+beginchar("r", d#, d#, 0);
+  "r: Informator symbol ``passed pawn''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.5d,.7d);
+  z2=(.5d,.4d);
+  draw fullcircle scaled .4d shifted (.5d,.2d);
+  draw z1--z2;
+  draw quartercircle rotated 270 scaled .2d shifted (.4d,.7d);
+  draw quartercircle rotated 180 scaled .2d shifted (.6d,.7d);
+endchar;
+
+beginchar("s", d#, d#, 0);
+  "s: Informator symbol ``bishops of the same color''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Points for lower square
+  z1=(.1d,.5d);
+  z2=(.1d,0);
+  z3=(.6d,.5d);
+  z4=(.6d,0);
+
+  % Points for upper square
+  z5=(.4d,.8d);
+  z6=(.4d,.3d);
+  z7=(.9d,.8d);
+  z8=(.9d,.3d);
+
+  fill z1--z2--z4--z3--cycle;
+  fill z5--z6--z8--z7--cycle;
+endchar;
+
+beginchar("t", d#, d#, 0);
+  "t: Informator symbol ``development advantage''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Arcus
+  z1=(.8d,.65d);
+  z2=(.5d,.8d);
+  z3=(.1d,.4d);
+  z4=(.5d,0);
+  z5=(.9d,.4d);
+  z6=(.85d,.55d);
+  % Arrow
+  z7=(.65d,.65d);
+  z8=(.8d,.8d);
+
+  draw z1..z2..z3..z4..z5..z6;
+  draw z7--z1;
+  draw z8--z1;
+endchar;
+
+beginchar("u", d#, d#, 0);
+  "u: Informator symbol ``united pawns''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  draw fullcircle scaled .35d shifted (.275d,.4d);
+  draw fullcircle scaled .35d shifted (.725d,.4d);
+endchar;
+
+beginchar("v", d#, d#, 0);
+  "v: Informator symbol ``without''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,.8d);
+  z2=(.1d,0);
+  z3=(.9d,0);
+  draw z1--z2--z3;
+endchar;
+
+beginchar("w", d#, d#, 0);
+  "w: Informator symbol ``with''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,0);
+  z2=(.9d,0);
+  z3=(.9d,.8d);
+  draw z1--z2--z3;
+endchar;
+
+beginchar("A", .9d#, d#, 0);
+  "A: Informator symbol ``with attack''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,.4d);
+  z2=(.7d,.4d);
+
+  draw z1--z2;
+  draw quartercircle rotated 180 scaled .2d shifted (.7d,.5d);
+  draw quartercircle rotated 90 scaled .2d shifted (.7d,.3d);
+endchar;
+
+beginchar("C", .6d#, d#, 0);
+  "C: Informator symbol ``with initiative''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.3d,.7d);
+  z2=(.3d,.1d);
+
+  draw z1--z2;
+  draw quartercircle rotated 270 scaled .2d shifted (.2d,.7d);
+  draw quartercircle rotated 180 scaled .2d shifted (.4d,.7d);
+endchar;
+
+beginchar("D", d#, d#, 0);
+  "D: Informator symbol ``zugzwang''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  draw fullcircle scaled .8d shifted (.5d,.4d);
+  fill fullcircle scaled .15d shifted (.5d,.4d);
+endchar;
+
+beginchar("E", d#, d#, 0);
+  "E: Informator symbol ``with the idea''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,0);
+  z2=(.9d,0);
+  z3=(.5d,.8d);
+
+  draw z1--z2--z3--z1;
+endchar;
+
+beginchar("F", d#, d#, 0);
+  "F: Informator symbol ``only move''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,0);
+  z2=(.9d,0);
+  z3=(.9d,.8d);
+  z4=(.1d,.8d);
+
+  draw z1--z2--z3--z4--z1;
+endchar;
+
+beginchar("G", d#, d#, 0);
+  "G: Informator symbol ``diagonal''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,.15d);
+  z2=(.75d,.8d);
+  z3=(.25d,0);
+  z4=(.9d,.65d);
+  z5=(.55d,.8d);
+  z6=(.9d,.45d);
+  z7=(.9d,.8d);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw z5--z7--z6;
+endchar;
+
+beginchar("H", d#, d#, 0);
+  "H: Informator symbol ``file''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.2d,.5d);
+  z2=(.8d,.5d);
+  z3=(.2d,.3d);
+  z4=(.8d,.3d);
+  z5=(.3d,.6d);
+  z6=(.1d,.4d);
+  z7=(.3d,.2d);
+  z8=(.7d,.6d);
+  z9=(.9d,.4d);
+  z10=(.7d,.2d);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw z5--z6--z7;
+  draw z8--z9--z10;
+endchar;
+
+beginchar("I", d#, d#, 0);
+  "I: Informator symbol ``centre''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Outer square
+  z1=(.1d,0);
+  z2=(.9d,0);
+  z3=(.9d,.8d);
+  z4=(.1d,.8d);
+  % Cross
+  z5=(.2d,.4d);
+  z6=(.8d,.4d);
+  z7=(.5d,.7d);
+  z8=(.5d,.1d);
+
+  draw z1--z2--z3--z4--z1;
+  draw z5--z6;
+  draw z7--z8;
+endchar;
+
+beginchar("J", d#, d#, 0);
+  "J: Informator symbol ``weak point''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,0);
+  z2=(.9d,0);
+  z3=(.9d,.8d);
+  z4=(.1d,.8d);
+
+  draw z1--z3;
+  draw z2--z4;
+endchar;
+
+beginchar("L", d#, d#, 0);
+  "L: Informator symbol ``ending''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,0);
+  z2=(.9d,0);
+  z3=(.5d,0);
+  z4=(.5d,.8d);
+
+  draw z1--z2;
+  draw z3--z4;
+endchar;
+
+beginchar("M", .8d#, d#, 0);
+  "M: Informator symbol ``queen's side''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.4d,.7d);
+  z2=(.1d,.4d);
+  z3=(.4d,.1d);
+  z4=(.6d,.7d);
+  z5=(.3d,.4d);
+  z6=(.6d,.1d);
+
+  draw z1--z2--z3;
+  draw z4--z5--z6;
+endchar;
+
+beginchar("O", .8d#, d#, 0);
+  "O: Informator symbol ``king's side''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.4d,.7d);
+  z2=(.7d,.4d);
+  z3=(.4d,.1d);
+  z4=(.2d,.7d);
+  z5=(.5d,.4d);
+  z6=(.2d,.1d);
+
+  draw z1--z2--z3;
+  draw z4--z5--z6;
+endchar;
+
+beginchar("P", .4d#, d#, 0);
+  "P: Informator symbol ``etc''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,.8d);
+  z2=(.1d,0);
+  z3=(.3d,.8d);
+  z4=(.3d,0);
+
+  draw z1--z2;
+  draw z3--z4;
+endchar;
+
+beginchar("S", .8d#, d#, 0);
+  "S: Informator symbol ``advantage in number of pawns''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,.8d);
+  z2=(.7d,.4d);
+  z3=(.1d,0);
+
+  draw z1--z2--z3;
+endchar;
+
+beginchar("T", d#, d#, 0);
+  "T: Informator symbol ``time''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  % Cross
+  z1=(.2d,.4d);
+  z2=(.8d,.4d);
+  z3=(.5d,.7d);
+  z4=(.5d,.1d);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw fullcircle scaled .8d shifted (.5d,.4d);
+endchar;
+
+beginchar("U", d#, d#, 0);
+  "U: Informator symbol ``greater board room''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  draw fullcircle scaled .8d shifted (.5d,.4d);
+endchar;
+
+beginchar("V", .8d#, d#, 0);
+  "V: Informator symbol ``with counter-play''";
+
+  pickup pencircle scaled thin;
+  define_whole_pixels(d);
+
+  z1=(.1d,.5d);
+  z2=(.7d,.5d);
+  z3=(.1d,.3d);
+  z4=(.7d,.3d);
+
+  draw z1--z2;
+  draw z3--z4;
+  draw quartercircle rotated 270 scaled .2d shifted (.1d,.6d);
+  draw quartercircle scaled .2d shifted (.1d,.4d);
+  draw quartercircle rotated 180 scaled .2d shifted (.7d,.4d);
+  draw quartercircle rotated 90 scaled .2d shifted (.7d,.2d);
+endchar;
+

@@ -1,0 +1,105 @@
+
+
+\documentclass[10pt]{article}
+
+\usepackage[ps,mover]{skak}
+
+\title{Ensure that storegame stores the full game}
+\author{Torben Hoffmann }
+
+\begin{document}
+
+\parindent=0pt
+
+\maketitle
+
+
+
+\newgame
+\mainline{1. d4 d5} 
+
+\boardasfen
+
+\storegame{game1}
+\restoregame{game1}
+
+\boardasfen
+
+\showboard
+
+\mainline{2. Nc3 Nc6 3. Bg5 Bd7}
+
+\showboard
+
+\boardasfen
+
+%\restoregame{skak.mainline.previous}
+
+\boardasfen
+
+\variation{3...f6}
+
+\mainline{4.e4}
+
+\showboard
+
+\section{Next}
+
+\newgame
+\mainline{1.e4 e5 2. Nf3 Nc6 3.Bb5}
+\storegame{game1}
+
+\showboard
+\boardasfen
+
+\mainline{3...a6 4.Ba4 b5}
+
+\showboard
+\restoregame{game1}
+
+\showboard
+\boardasfen
+
+Move number: \arabic{move}.
+
+
+
+
+\mainline{3...Bd7}
+\showboard
+
+\section{tuggame}
+
+\fenboard{1q3kr1/3rb2p/p3Q3/8/%
+1p6/8/PPP3PP/4R2K w - - 0 26}
+
+\showboard
+
+\mainline{26. Qxd7}
+
+\showboard
+
+Not \variation{26. Rf1+ Kg7 27. Rf7+ 
+Kh8} 
+
+%\variation{26. Rf1+}
+
+\showboard
+
+% \variationcurrent{26...Qa7}
+
+% \showboard
+
+and if \continuevariationcurrent{28. Qxd7 Rd8 29. Qg4 Qe5}
+wins. 
+
+\showboard
+
+
+\end{document}
+
+
+
+
+
+

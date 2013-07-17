@@ -1,0 +1,52 @@
+%% Name:	angletst.tex
+%% Author:	Dirk Baechle
+%% Date:	2003-01-23
+
+\documentclass[12pt]{article}
+
+\usepackage[ps]{skak}
+
+\def\testfileangle#1#2#3{%
+  \texttt{#1 -> #2}
+  \printfileangle{#1}{#2}
+  should be: #3\newline}
+
+\def\testrankangle#1#2#3{%
+  \texttt{#1 -> #2}
+  \printrankangle{#1}{#2}
+  should be: #3\newline}
+
+\begin{document}
+
+\section{Test of the ``\texttt{fileangle}s''}
+
+\testfileangle{a}{b}{0}
+\testfileangle{a}{c}{0}
+\testfileangle{b}{a}{0}\testfileangle{b}{c}{0}\testfileangle{b}{d}{0}
+\testfileangle{c}{a}{180}\testfileangle{c}{b}{0}
+\testfileangle{c}{d}{0}\testfileangle{c}{e}{0}
+\testfileangle{d}{b}{180}\testfileangle{d}{c}{0}
+\testfileangle{d}{e}{0}\testfileangle{d}{f}{0}
+\testfileangle{e}{c}{180}\testfileangle{e}{d}{0}
+\testfileangle{e}{f}{0}\testfileangle{e}{g}{0}
+\testfileangle{f}{d}{180}\testfileangle{f}{e}{0}
+\testfileangle{f}{g}{0}\testfileangle{f}{h}{0}
+\testfileangle{g}{e}{180}\testfileangle{g}{f}{0}\testfileangle{g}{h}{0}
+\testfileangle{h}{f}{180}\testfileangle{h}{g}{0}
+
+\section{Test of the ``\texttt{rankangle}s''}
+
+\testrankangle{1}{2}{0}\testrankangle{1}{3}{90}
+\testrankangle{2}{1}{0}\testrankangle{2}{3}{0}\testrankangle{2}{4}{90}
+\testrankangle{3}{1}{270}\testrankangle{3}{2}{0}
+\testrankangle{3}{4}{0}\testrankangle{3}{5}{90}
+\testrankangle{4}{2}{270}\testrankangle{4}{3}{0}
+\testrankangle{4}{5}{0}\testrankangle{4}{6}{90}
+\testrankangle{5}{3}{270}\testrankangle{5}{4}{0}
+\testrankangle{5}{6}{0}\testrankangle{5}{7}{90}
+\testrankangle{6}{4}{270}\testrankangle{6}{5}{0}
+\testrankangle{6}{7}{0}\testrankangle{6}{8}{90}
+\testrankangle{7}{5}{270}\testrankangle{7}{6}{0}\testrankangle{7}{8}{0}
+\testrankangle{8}{6}{270}\testrankangle{8}{7}{0}
+
+\end{document}

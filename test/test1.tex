@@ -1,0 +1,42 @@
+
+
+\documentclass[11pt,twocolumn]{article}
+
+\usepackage[ps,mover]{skak}
+
+\title{test1\\Ensuring that no Unwanted Spaces are Created}
+\author{Torben Hoffmann }
+
+\begin{document}
+
+\parindent=0pt
+
+\maketitle
+
+Ulrike Fischer had a problem with unwanted spaces which should be
+solved in version 1.1.
+
+
+\newgame
+\mainline{1. d4 d5} \mainline{2. Nc3 Nc6 3. Bg5 Bd7}
+
+\newgame
+\mainline{1.d4 d5} \mainline{2. Nc3 Nc6 3. e4 e5}
+
+
+\newgame
+\mainline{1.d4 d5} \mainline{2. e3 e6 3. c4 c5}
+
+\newgame
+\mainline{1.d4 d5} \mainline{2. e3 e6 3. c4 c5}
+
+\showboard
+
+
+\end{document}
+
+
+
+
+
+

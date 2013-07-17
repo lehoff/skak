@@ -1,0 +1,61 @@
+%% Define a set of informant-like symbols.
+%% This is based on the similar section in
+%% the original Tutelaers chess.sty. Original
+%% credits to Henry Thomas and John Saba as well.
+%% I had to remove a couple of them, due to conflicts
+%% or bad dependencies.
+%%
+%% For a complete list of informant symbols see Informant#51 (1991) pp 10-12.
+%%
+\ProvidesPackage{chess-workshop-symbols}[2000/08/26]
+\RequirePackage{latexsym}
+
+\providecommand{\wbetter}{\mbox{\baselineskip0pt$\vcenter{\vbox{\hbox{+}\hbox{=}}}$}}
+\providecommand{\bbetter}{\mbox{\baselineskip0pt$\vcenter{\vbox{\hbox{=}\kern-.3ex\hbox{+}}}$}}
+\providecommand{\wupperhand}{\mbox{$\pm$}}
+\providecommand{\bupperhand}{\mbox{$\mp$}}
+\providecommand{\wdecisive}{\mbox{$+\hbox{}-$}}
+\providecommand{\bdecisive}{\mbox{$-\hbox{}+$}}
+\providecommand{\equal}{=}
+\providecommand{\unclear}{\mbox{$\infty$}}
+
+
+\providecommand{\compensation}{\mbox{\baselineskip0pt$\vcenter{\vbox{\hbox{\kern.056em\vbox{\hrule width0.89em\kern0.35ex\hrule width0.89em}}\kern.2ex\hbox{$\infty$}}}$}}
+\providecommand{\withattack}{$\rightarrow$}
+\providecommand{\withinit}{$\uparrow$}
+\providecommand{\counterplay}{\hbox{\baselineskip0pt$\vcenter{\vbox{\hbox{$\leftarrow$}\hbox{$\rightarrow$}}}$}}
+\providecommand{\zugzwang}{$\odot$}
+\providecommand{\mate}{\kern.4pt\mbox{\vrule width2ex height1.18ex depth-1.1ex\kern-2ex\vrule width2ex height.52ex depth-.44ex\kern-1.381ex\vrule width.08ex height1.8ex depth.2ex\kern0.615ex\vrule width.08ex height1.8ex depth.2ex\kern0.406ex}\kern.4pt}
+\providecommand{\withidea}{$\triangle$}
+\providecommand{\onlymove}{$\Box$}
+\providecommand{\betteris}{\mbox{\baselineskip0pt$\vcenter{\vbox{\hbox{$\frown$}\kern-0.35ex\hrule width0.95em}}$}}
+\providecommand{\file}{$\Leftrightarrow$}
+
+\providecommand{\diagonal}{$\nearrow$}
+% + \centre        {$\Box$\kern-.6em\raise.54ex\hbox{\smrm\char'053}}
+\providecommand{\kside}{$\gg$}
+\providecommand{\qside}{$\ll$}
+\providecommand{\weakpt}{$\times$}
+% + \ending        {$\perp$}
+
+\providecommand{\blackbox}{\vrule height .8ex width 1.2ex depth 0ex}
+\providecommand{\whitebox}{\vbox{\hrule height .1pt\hbox{\vrule width .1pt\kern.6ex\vbox{\kern.8ex}\kern.6ex\vrule width .1pt}\hrule height .1pt}}
+\providecommand{\bishoppair}{\whitebox\kern-2pt\raise1.8pt\hbox{\whitebox}}
+\providecommand{\opposbishops}{\whitebox\kern-2pt\raise1.8pt\hbox{\blackbox}}
+\providecommand{\samebishops}{\blackbox\kern-2pt\raise1.8pt\hbox{\blackbox}}
+
+\providecommand{\unitedpawns}{$\circ\kern-.05em\circ$}
+\providecommand{\seppawns}{$\circ\kern-.3em\cdot\kern-.35em\cdot\kern-.1em\circ$}
+\providecommand{\doublepawns}{\mbox{\baselineskip0pt$\vcenter{\vbox{\hbox{$\circ$}\vskip.8pt\hbox{$\circ$}}}$}}
+
+% + \passedpawn  {\mbox{\baselineskip0pt$\vcenter{\vbox{\hbox{\kern0.14em\symbolsix\char'042}\hbox{$\circ$}}}$}}
+\providecommand{\morepawns}{$>$}
+\providecommand{\timelimit}{$\oplus$}
+\providecommand{\novelty}{{\sc N}}
+\providecommand{\comment}{{\sc RR}}
+\providecommand{\various}{{\sc R}}
+\providecommand{\without}{\kern.4pt\mbox{\vrule width 1ex height.08ex depth0ex\kern-0.08ex\vrule width0.08ex height1.5ex depth0ex}\kern.4pt}
+\providecommand{\with}{\kern.4pt\mbox{\vrule width 0.08ex height1.5ex depth0ex\kern-0.08ex\vrule width 1ex height.08ex depth0ex}\kern.4pt}
+\providecommand{\etc}{$\parallel$}
+%\providecommand{\see}{\kern.4pt\mbox{\vrule width 1em height.54ex depth-.46ex}\kern.4pt}
+\providecommand{\see} {see}

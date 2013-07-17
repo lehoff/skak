@@ -687,9 +687,9 @@
 
 \def\WhiteToMove{\True}
 
-\def\WhiteKingSquare% unit -> square
+\xdef\WhiteKingSquare% unit -> square
 {e1}
-\def\BlackKingSquare% unit -> square
+\xdef\BlackKingSquare% unit -> square
 {e8}
 \def\KingSquare#1{% bool -> square
 #1\WhiteKingSquare\BlackKingSquare}
@@ -1118,7 +1118,7 @@
 \def\DoTheMove#1{% move the piece from #1 to \MoveToFile\MoveToRank
   \edef\oldpiece{\Get{\MoveToFile\MoveToRank}}%
   \Set{\MoveTo}{\Get{#1}}\Set{#1}{E}%
-  \gdef\MoveFrom{#1}}
+  \edef\MoveFrom{#1}}
 
 \def\DoTheMoveList#1{\DoTheMove{\Head{#1}}}
 

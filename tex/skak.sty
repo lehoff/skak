@@ -1,41 +1,5 @@
-% Version Date        Description
-% 1.0     2002-06-05  Major overhaul of the documentation and a few
-%                     minor bug fixes.
-% 1.1     2003-01-01  Added Dirk Baechle's enhancements:
-%                       - extension of the \highlight command
-%                       - unwanted generation of spaces removed
-%                       - a set of informator symbols added
-%                       - the fonts have been improved
-%                     Fixed a bug in \ParseCoordinates (fix provided by
-%                     Ulrike Fischer).
-%                     Fixed the bug with opening spaces in the SAN input.
-% 1.2    2003-01-12  Incorporated Dirk Baechle's improvements of the
-%                    Informator symbols and redefined the \liftfig
-%                    according to Dirk's input.
-%                    The PostScript files are now significantly
-%                    smaller due to a big effort by Dirk.
-% 1.3    2003-09-27  Dirk Baechle has fixed some of the Informator symbols
-%                    which needed an extra set of curly braces.
-%                    The check for trailing spaces in the ``typeset@cmoves''
-%                    command has been removed due to problems at the end of a
-%                    ``mainline'' or ``variation'' env when an additional
-%                    Informator symbol was involved..
-% 1.4    2004-12-30  Incorporation of changes made by Ulrike Fischer that
-%                    makes it easy to use different fonts. 
-%                    New engine for parsing and typesetting moves: 
-%                    the functionality is now shared between the two.
-%                    Joao Nabais reported a problem related to switching 
-%                    back and forth from styleC - this has been fixed using 
-%                    \leavestylec command complex.
-% 1.5   2008-10-09   Fixed a major problem with longmoves - the pawn moves 
-%                    are now displayed correctly. Changed the \storegame and
-%                    \restoregame to store both the current position and the
-%                    previous positon so a full restore can be made.
-%                    Added new variation commands.
-
-
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{skak}[2008/10/09 v1.5 Chess typesetting]
+\ProvidesPackage{skak}[2013/07/18 v1.5.1 Chess typesetting]
 
 \DeclareOption{tiny}{\AtEndOfClass{\tinyboard}}
 \DeclareOption{small}{\AtEndOfClass{\smallboard}}
@@ -961,11 +925,14 @@
 
 
 \DeclareRobustCommand{\lastmove}{{\def\variationstyle{}%
+    \styleC@on{\let\skak@ensuremath=\ensuremath}{\let\skak@ensuremath=\relax}%
     \WhiteToMove{%
       \addtocounter{move}{-1}%
-      \beforenumber\arabic{move}\blackopen\beforeblack%
+      \skak@ensuremath\beforenumber\arabic{move}\blackopen\skak@ensuremath%
+      \beforeblack%
       \addtocounter{move}{1}}%
-    {\beforenumber\arabic{move}\whiteopen\beforewhite}%
+    {\skak@ensuremath\beforenumber\arabic{move}\skak@ensuremath\whiteopen%
+      \skak@ensuremath\beforewhite}%
     \expandafter\wmove\expandafter{\LastMoveString}}}
 
 \def\ParseMoveA(#1#2){% char -> string -> unit

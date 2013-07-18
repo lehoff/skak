@@ -1,0 +1,22 @@
+I would like to thank the creator of the lambda package,
+Alan Jeffrey, for making a splendid package that made this package
+possible.
+
+For discussions and alpha-testing I send my thanks to Guido
+Governatori - some of his ideas have already been implemented; the
+rest? Time will show.
+
+Thanks to Harri Haanpaa for finding a nasty bug in the castling
+routine.
+
+A big thank goes to Dirk Bächle for adding the Informator symbols to
+the fonts and for removing a couple of nasty bugs as well as improving
+some of the commands.
+
+I thank Ulrike Fischer for the tremendous work she has done with
+regards to improving the way fonts are handled by the skak package,
+not to mention the significant amount of bugs she has found and in
+many cases fixed.
+
+Thanks for reporting various bugs goes to Ingo Sander, Andreas Wilm,
+Ulrich Dirr and Niels Stargardt.

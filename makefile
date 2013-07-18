@@ -105,7 +105,6 @@ install: fonts doc
 	@echo "Remember to run texhash!"
 clean:
 	rm -f *gf *pk *.ps *.dvi *.aux *.log *.tfm *.mf *.fd *.sty *.toc
-
-
+	rm -f test/*.dvi test/*.log test/*.aux
 
 

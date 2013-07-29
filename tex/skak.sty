@@ -1667,7 +1667,7 @@
 % new version of \@variation
 \def\@variation#1{\endgroup%
   \let\currentstyle=\variationstyle%
-  \gdef\Printmoves{\True}%
+  \gdef\PrintMoves{\True}%
   \gdef\ExecuteMoves{\True}%
   \gdef\StoreLastMove{\False}%
   \@restoregame{skak.mainline.previous}% roll-back of last move.
@@ -1688,7 +1688,7 @@
 
 \def\@variationcurrent#1{\endgroup%
   \let\currentstyle=\variationstyle%
-  \gdef\Printmoves{\True}%
+  \gdef\PrintMoves{\True}%
   \gdef\ExecuteMoves{\True}%
   \gdef\StoreLastMove{\False}%
   \@restoregame{skak.mainline}%
@@ -1697,7 +1697,7 @@
 
 \def\@continuevariation#1{\endgroup%
   \let\currentstyle=\variationstyle%
-  \gdef\Printmoves{\True}%
+  \gdef\PrintMoves{\True}%
   \gdef\ExecuteMoves{\True}%
   \gdef\StoreLastMove{\False}%
   \@restoregame{skak.variation.previous}% roll-back of last move.
@@ -1707,7 +1707,7 @@
 
 \def\@continuevariationcurrent#1{\endgroup%
   \let\currentstyle=\variationstyle%
-  \gdef\Printmoves{\True}%
+  \gdef\PrintMoves{\True}%
   \gdef\ExecuteMoves{\True}%
   \gdef\StoreLastMove{\False}%
   \@restoregame{skak.variation}%

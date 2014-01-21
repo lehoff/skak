@@ -4,6 +4,7 @@
 # Version:	July 1999
 
 SHELL = /bin/sh
+LATEX = latex
 
 # where should the .sty and .tfm files go?
 TEXMFROOT=$(HOME)/Library/texmf
@@ -14,13 +15,13 @@ DESTTFM=$(TEXMFROOT)/fonts/tfm/public/skak/
 DESTSOURCE=$(TEXMFROOT)/fonts/source/public/skak/
 DESTDOC=$(TEXMFROOT)/doc/latex/skak/
 MFSKAKBASE= mf/skakbrikker.mf mf/skakbase.mf mf/skakinf.mf 
-SKAKMACROS= skak10.600pk skak15.600pk skak20.600pk skak30.600pk skakf10.600pk skakf10b.600pk tex/skak.sty tex/lambda.sty 
+SKAKMACROS= skak10.600pk skak15.600pk skak20.600pk skak30.600pk skakf10.600pk skakf10b.600pk tex/skak.sty
 
 .SUFFIXES: .dvi .ps .600gf .600pk
 
 all: fonts doc
 
-doc: skakdoc.ps tuggame.ps refman.ps informator.ps
+doc: skakdoc.pdf tuggame.pdf refman.pdf informator.pdf
 
 fonts: skak10.600pk skak15.600pk skak20.600pk skak30.600pk skakf10.600pk skakf10b.600pk 
 
@@ -44,27 +45,30 @@ skakinf.mf: mf/skakinf.mf
 
 skakdoc.dvi: doc/skakdoc.tex $(SKAKMACROS)
 	(cp tex/*.sty .; \
-	 latex "\batchmode\input doc/skakdoc.tex" \
-	 latex "\batchmode\input doc/skakdoc.tex")
+	 ${LATEX} "\batchmode\input doc/skakdoc.tex" \
+	 ${LATEX} "\batchmode\input doc/skakdoc.tex")
 
 tuggame.dvi: doc/tuggame.tex $(SKAKMACROS) 
 	(cp tex/*.sty .; \
-	 latex "\batchmode\input doc/tuggame.tex" \
-	 latex "\batchmode\input doc/tuggame.tex")
+	 ${LATEX} "\batchmode\input doc/tuggame.tex" \
+	 ${LATEX} "\batchmode\input doc/tuggame.tex")
 
 refman.dvi: doc/refman.tex $(SKAKMACROS) 
 	(cp tex/*.sty .; \
-	 latex "\batchmode\input doc/refman.tex" \
-	 latex "\batchmode\input doc/refman.tex")
+	 ${LATEX} "\batchmode\input doc/refman.tex" \
+	 ${LATEX} "\batchmode\input doc/refman.tex")
 
 informator.dvi: doc/informator.tex $(SKAKMACROS) 
 	(cp tex/*.sty .; \
-	 latex "\batchmode\input doc/informator.tex" \
-	 latex "\batchmode\input doc/informator.tex")
+	 ${LATEX} "\batchmode\input doc/informator.tex" \
+	 ${LATEX} "\batchmode\input doc/informator.tex")
 
 
-.dvi.ps : 
-	dvips -o $@ $<
+%.pdf:	%.dvi
+	dvipdf $<
+
+.dvi.pdf : 
+	dvipdf -o $@ $<
 
 .600gf.600pk:
 	gftopk $<

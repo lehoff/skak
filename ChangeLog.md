@@ -1,3 +1,8 @@
+Version 1.5.2
+-------------
+
+* Removed lambda.sty from the skak distribution.
+
 Version 1.5.1
 -------------
 

@@ -1,114 +1,54 @@
 # File: 	Makefile
 # Purpose:	automatic generation of fonts
 # Author:	Torben Hoffmann, based on work by Piet Tutelaers
-# Version:	July 1999
 
 SHELL = /bin/sh
-LATEX = latex
 
-# where should the .sty and .tfm files go?
-TEXMFROOT=$(HOME)/Library/texmf
-INPUTS=$(TEXMFROOT)/tex/latex/skak/
-DESTPK=$(TEXMFROOT)/fonts/pk/public/skak/
-DESTGF=$(TEXMFROOT)/fonts/gf/public/skak/
-DESTTFM=$(TEXMFROOT)/fonts/tfm/public/skak/
-DESTSOURCE=$(TEXMFROOT)/fonts/source/public/skak/
-DESTDOC=$(TEXMFROOT)/doc/latex/skak/
 MFSKAKBASE= mf/skakbrikker.mf mf/skakbase.mf mf/skakinf.mf 
 SKAKMACROS= skak10.600pk skak15.600pk skak20.600pk skak30.600pk skakf10.600pk skakf10b.600pk tex/skak.sty
 
+TEXINPUTS=tex/:mf/:
+
 .SUFFIXES: .dvi .ps .600gf .600pk
 
-all: fonts doc
+all: fonts doc 
 
-doc: skakdoc.pdf tuggame.pdf refman.pdf informator.pdf
+doc: doc/skakdoc.pdf doc/tuggame.pdf doc/refman.pdf doc/informator.pdf fonts
 
 fonts: skak10.600pk skak15.600pk skak20.600pk skak30.600pk skakf10.600pk skakf10b.600pk 
 
-skakbase: skakbrikker.mf skakbase.mf skakf10.mf skakf10b.mf skakinf.mf 
-
-skakbrikker.mf: mf/skakbrikker.mf 
-	(cp mf/skakbrikker.mf .)	
-
-skakbase.mf: mf/skakbase.mf
-	(cp mf/skakbase.mf .)	
-
-skakf10.mf: mf/skakf10.mf
-	(cp mf/skakf10.mf .)	
-
-skakf10b.mf: mf/skakf10b.mf
-	(cp mf/skakf10b.mf .)	
-
-skakinf.mf: mf/skakinf.mf
-	(cp mf/skakinf.mf .)	
-
-
-skakdoc.dvi: doc/skakdoc.tex $(SKAKMACROS)
-	(cp tex/*.sty .; \
-	 ${LATEX} "\batchmode\input doc/skakdoc.tex" \
-	 ${LATEX} "\batchmode\input doc/skakdoc.tex")
-
-tuggame.dvi: doc/tuggame.tex $(SKAKMACROS) 
-	(cp tex/*.sty .; \
-	 ${LATEX} "\batchmode\input doc/tuggame.tex" \
-	 ${LATEX} "\batchmode\input doc/tuggame.tex")
-
-refman.dvi: doc/refman.tex $(SKAKMACROS) 
-	(cp tex/*.sty .; \
-	 ${LATEX} "\batchmode\input doc/refman.tex" \
-	 ${LATEX} "\batchmode\input doc/refman.tex")
-
-informator.dvi: doc/informator.tex $(SKAKMACROS) 
-	(cp tex/*.sty .; \
-	 ${LATEX} "\batchmode\input doc/informator.tex" \
-	 ${LATEX} "\batchmode\input doc/informator.tex")
-
-
-%.pdf:	%.dvi
-	dvipdf $<
-
-.dvi.pdf : 
-	dvipdf -o $@ $<
+doc/%.pdf:	doc/%.tex ${SKAKMACROS} 
+	latexmk -silent -pdfdvi -outdir=doc $<
 
 .600gf.600pk:
 	gftopk $<
 
-skak10.tfm skak10.600gf: mf/skak10.mf $(MFSKAKBASE) skakbase
+skak10.tfm skak10.600gf: mf/skak10.mf $(MFSKAKBASE) 
 	(mf "\mode:=localfont; input mf/skak10")
 
-skak15.tfm skak15.600gf: mf/skak15.mf $(MFSKAKBASE) skakbase
+skak15.tfm skak15.600gf: mf/skak15.mf $(MFSKAKBASE) 
 	(mf "\mode:=localfont; input mf/skak15")
 
-skak20.tfm skak20.600gf: mf/skak20.mf $(MFSKAKBASE) skakbase
+skak20.tfm skak20.600gf: mf/skak20.mf $(MFSKAKBASE) 
 	(mf "\mode:=localfont; input mf/skak20")
 
-skak30.tfm skak30.600gf: mf/skak30.mf $(MFSKAKBASE) skakbase
+skak30.tfm skak30.600gf: mf/skak30.mf $(MFSKAKBASE) 
 	(mf "\mode:=localfont; input mf/skak30")
 
-skakf10.tfm skakf10.600gf: mf/skakf10.mf $(MFSKAKBASE) skakbase
+skakf10.tfm skakf10.600gf: mf/skakf10.mf $(MFSKAKBASE) 
 	(mf "\mode:=localfont; input mf/skakf10")
 
 # bold versions of the figurine notation fonts
-skakf10b.tfm skakf10b.600gf: mf/skakf10b.mf $(MFSKAKBASE) skakbase
+skakf10b.tfm skakf10b.600gf: mf/skakf10b.mf $(MFSKAKBASE) 
 	(mf "\mode:=localfont; input mf/skakf10b")
 
-install: fonts doc
-	install -d ${DESTPK}
-	install -d ${DESTGF}
-	install -d ${DESTTFM}
-	install -d ${DESTSOURCE}
-	install -d ${INPUTS}
-	install -d ${DESTDOC}
-	install   skak*.600pk $(DESTPK)
-	install   skak*.600gf $(DESTGF)
-	install   skak*.tfm   $(DESTTFM)
-	install   mf/skak*.mf    $(DESTSOURCE)
-	install   tex/skak.sty    $(INPUTS)
-	install   tex/lambda.sty  $(INPUTS)
-	install   *.ps            $(DESTDOC)
-	@echo "Remember to run texhash!"
+
 clean:
 	rm -f *gf *pk *.ps *.dvi *.aux *.log *.tfm *.mf *.fd *.sty *.toc
 	rm -f test/*.dvi test/*.log test/*.aux
+	rm -f doc/*.dvi doc/*.aux doc/*.toc doc/*latexmk doc/*.fls doc/*.log doc/*flymake* doc/*.fen doc/*.tmp
+	rm -f *latexmk *.fls
 
+ctan: tex/skak.sty tex/*.tex tex/*.fd mf/*.mf doc
+	ctanify --pkgname=skak tex/skak.sty tex/*.tex tex/*.fd mf/*.mf doc/*.pdf README THANKS LICENSE ChangeLog.md special.map test/*.tex
 

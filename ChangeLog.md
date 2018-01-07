@@ -1,3 +1,10 @@
+Version 1.5.3
+-------------
+
+* cosmetic fixes:
+  - rename makefile to Makefile.
+  - updated version numbers correctly.
+
 Version 1.5.2
 -------------
 
